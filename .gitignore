@@ -1,3 +1,7 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/settings.json
+.vscode/tasks.json
+build/Debug/move_labirinto.o
+.gitignore
+build/Debug/outDebug.exe
