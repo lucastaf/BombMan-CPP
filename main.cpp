@@ -4,7 +4,7 @@
 */
 
 
-#include "matrixFunctions.cpp"
+#include "gameFunctions.cpp"
 
 
 #define QtdObjetos 2
@@ -15,6 +15,7 @@ int main()
 {
     ///ALERTA: NAO MODIFICAR O TRECHO DE CODIGO, A SEGUIR.
         //INICIO: COMANDOS PARA QUE O CURSOR NAO FIQUE PISCANDO NA TELA
+        srand(time(NULL));
         HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
         CONSOLE_CURSOR_INFO     cursorInfo;
         GetConsoleCursorInfo(out, &cursorInfo);
@@ -30,26 +31,27 @@ int main()
     ///ALERTA: NAO MODIFICAR O TRECHO DE CODIGO, ACIMA.
 
     
-    map m = {   2,2,2,2,2,2,2,2,2,2,2,2,2,0,2,
+    map m = {   4,4,4,4,4,4,4,4,4,4,4,4,4,0,4,
                 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                2,0,2,0,2,0,2,2,2,2,2,2,2,0,0,
-                2,0,2,0,2,0,2,2,2,2,2,2,2,0,0,
-                2,0,2,0,2,0,2,2,2,2,2,2,2,0,2,
-                2,0,2,0,0,0,2,2,2,2,2,2,2,0,2,
-                2,0,2,0,2,0,2,2,2,2,2,2,2,0,2,
-                2,0,2,0,2,0,2,2,2,2,2,2,2,0,2,
-                2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,
-                2,2,2,0,0,0,2,2,2,2,2,2,2,0,2
+                4,0,4,0,4,0,4,4,4,4,4,4,4,0,0,
+                4,0,4,0,4,0,4,4,4,4,4,4,4,0,0,
+                4,0,4,0,4,5,4,4,4,4,4,4,4,5,4,
+                4,0,4,0,0,0,4,4,4,4,4,4,4,0,4,
+                4,0,4,0,4,0,4,4,4,4,4,4,4,0,4,
+                4,0,4,0,4,0,4,4,4,4,4,4,4,0,4,
+                4,0,0,0,0,0,0,0,5,0,0,0,0,0,4,
+                4,4,4,0,0,0,4,4,4,4,4,4,4,0,4
     };
 
     map currentframe = m;
 
 
    
-    obj player = {1,1,4};  //Posicao inicial do personagem no console
-    bomba bomba =  {0,0,5,0};
+    obj player = {1,1,playerid};  //Posicao inicial do personagem no console
+    inimigo inimigo = {13,13,inimigoid}; //posição inicial do inimigo no console
+    bomba bomba =  {0,0,bombaid,0};
     for(int x=0;x<=raio*4;x++){
-        bomba.explosao[x].id = 1;
+        bomba.explosao[0][x].id = explosaoid;
     }
     //Variavel para tecla precionada
     char tecla;
@@ -60,7 +62,9 @@ int main()
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
         
         currentframe = m;
-        
+         SumMapItens(currentframe,player);
+         if(bomba.status) SumMapItens(currentframe,bomba.bomba);
+         if(bomba.status == 2) SumMapExplosion(currentframe,bomba.explosao);
 
         ///executa os movimentos
          if ( _kbhit() ){
@@ -68,33 +72,46 @@ int main()
             switch(tecla)
             {
                 case 72: case 'w': ///cima
-                    player = moveObject(player,0,-1,m);
+                    player = moveObject(player,0,-1,currentframe);
                 break;
                 case 80: case 's': ///baixo
-                    player = moveObject(player,0,1,m);
+                    player = moveObject(player,0,1,currentframe);
                 break;
                 case 75:case 'a': ///esquerda
-                    player = moveObject(player,-1,0,m);
+                    player = moveObject(player,-1,0,currentframe);
                 break;
                 case 77: case 'd': ///direita
-                    player = moveObject(player,1,0,m);
+                    player = moveObject(player,1,0,currentframe);
                 break;
                 case ' ':
-                    if (!bomba.existe) colocaBomba(player,bomba);
+                    if (!bomba.status) colocaBomba(player,bomba);
                 break;
             }
          }
         //------------------
-        if (bomba.existe){
-            bomba.tigger = clock();
-            if ((bomba.tigger - bomba.set)/CLOCKS_PER_SEC == 2){
+        if (bomba.status){
+            bomba.trigger = clock();
+            if ((bomba.trigger - bomba.set)/CLOCKS_PER_SEC == 2){
                 explodirBomba(bomba, m);
             }
         }     
+        
+        if (inimigo.status) //se inimigo esta vivo
+        {
+            inimigo.trigger = clock();
+            if (inimigo.status == 1 && inimigo.trigger - inimigo.set/CLOCKS_PER_SEC == 1)
+            {
+                inimigo.direcao = novaDirecaoInimigo(inimigo,currentframe);
+                inimigo.numeroPassos = rand()%3+1;
+                inimigo.status = 2;
+            }else{
+                MoveInimigo(inimigo,currentframe);
+            }
+            
+        }
 
 
-         SumMapItens(currentframe,player);
-         if(bomba.existe) SumMapItens(currentframe,bomba.bomba);
+
          draw_map(currentframe);
 
 
