@@ -5,3 +5,4 @@
 build/Debug/move_labirinto.o
 .gitignore
 build/Debug/outDebug.exe
+main.exe

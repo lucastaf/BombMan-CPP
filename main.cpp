@@ -13,8 +13,8 @@
 
 int main()
 {
-    ///ALERTA: N�O MODIFICAR O TRECHO DE C�DIGO, A SEGUIR.
-        //INICIO: COMANDOS PARA QUE O CURSOR N�O FIQUE PISCANDO NA TELA
+    ///ALERTA: NAO MODIFICAR O TRECHO DE CODIGO, A SEGUIR.
+        //INICIO: COMANDOS PARA QUE O CURSOR NAO FIQUE PISCANDO NA TELA
         HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
         CONSOLE_CURSOR_INFO     cursorInfo;
         GetConsoleCursorInfo(out, &cursorInfo);
@@ -26,31 +26,40 @@ int main()
         COORD coord;
         coord.X = CX;
         coord.Y = CY;
-        //FIM: COMANDOS PARA REPOSICIONAR O CURSOR NO IN�CIO DA TELA
-    ///ALERTA: N�O MODIFICAR O TRECHO DE C�DIGO, ACIMA.
+        //FIM: COMANDOS PARA REPOSICIONAR O CURSOR NO INICIO DA TELA
+    ///ALERTA: NAO MODIFICAR O TRECHO DE CODIGO, ACIMA.
 
-    map m = {   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-                1,0,1,0,1,0,1,1,1,1,1,1,1,0,1,
-                1,0,1,0,1,0,1,1,1,1,1,1,1,0,1,
-                1,0,1,0,1,0,1,1,1,1,1,1,1,0,1,
-                1,0,1,0,0,0,1,1,1,1,1,1,1,0,1,
-                1,0,1,0,1,0,1,1,1,1,1,1,1,0,1,
-                1,0,1,0,1,0,1,1,1,1,1,1,1,0,1,
-                1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-                1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+    
+    map m = {   2,2,2,2,2,2,2,2,2,2,2,2,2,0,2,
+                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                2,0,2,0,2,0,2,2,2,2,2,2,2,0,0,
+                2,0,2,0,2,0,2,2,2,2,2,2,2,0,0,
+                2,0,2,0,2,0,2,2,2,2,2,2,2,0,2,
+                2,0,2,0,0,0,2,2,2,2,2,2,2,0,2,
+                2,0,2,0,2,0,2,2,2,2,2,2,2,0,2,
+                2,0,2,0,2,0,2,2,2,2,2,2,2,0,2,
+                2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,
+                2,2,2,0,0,0,2,2,2,2,2,2,2,0,2
     };
 
+    map currentframe = m;
 
-    //Posi��o inicial do personagem no console
-    obj player = {1,1,2};
-    //Vari�vel para tecla precionada
+
+   
+    obj player = {1,1,4};  //Posicao inicial do personagem no console
+    bomba bomba =  {0,0,5,0};
+    for(int x=0;x<=raio*4;x++){
+        bomba.explosao[x].id = 1;
+    }
+    //Variavel para tecla precionada
     char tecla;
     
-    while(true){
+    while(true) //Loop principal do Jogo
+    {
         ///Posiciona a escrita no início do console
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-
+        
+        currentframe = m;
         
 
         ///executa os movimentos
@@ -70,10 +79,23 @@ int main()
                 case 77: case 'd': ///direita
                     player = moveObject(player,1,0,m);
                 break;
+                case ' ':
+                    if (!bomba.existe) colocaBomba(player,bomba);
+                break;
             }
          }
+        //------------------
+        if (bomba.existe){
+            bomba.tigger = clock();
+            if ((bomba.tigger - bomba.set)/CLOCKS_PER_SEC == 2){
+                explodirBomba(bomba, m);
+            }
+        }     
 
-         draw_map(SumMapItens(m,player));
+
+         SumMapItens(currentframe,player);
+         if(bomba.existe) SumMapItens(currentframe,bomba.bomba);
+         draw_map(currentframe);
 
 
     } //fim do laço do jogo
