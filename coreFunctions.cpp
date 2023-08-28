@@ -6,7 +6,8 @@ using namespace std;
 
 #define sizex 15
 #define sizey 10
-#define raio 1
+#define raio 3
+//Ids
 #define vazioid 0
 #define explosaoid 1
 #define inimigoid 2
@@ -68,7 +69,7 @@ obj moveObject(obj objeto,int Xmove, int Ymove, map mapa, bool isBomb = false){
     if (objeto.x + Xmove >= 0 && objeto.x + Xmove < sizex){
         if (mapa.mapa[objeto.y][objeto.x + Xmove] <= playerid){ //0 é vazio e 1 é explosao
             objeto.x += Xmove;
-        }
+        }else
         if(isBomb && mapa.mapa[objeto.y][objeto.x + Xmove] == paredefragilid){
             objeto.x += Xmove;
         }
@@ -76,7 +77,7 @@ obj moveObject(obj objeto,int Xmove, int Ymove, map mapa, bool isBomb = false){
     if (objeto.y + Ymove >= 0 && objeto.y + Ymove < sizey){
         if(mapa.mapa[objeto.y+Ymove][objeto.x] <= playerid){
             objeto.y += Ymove;
-        }
+        }else
         if(isBomb && mapa.mapa[objeto.y+Ymove][objeto.x] == paredefragilid){
             objeto.y += Ymove;
         }

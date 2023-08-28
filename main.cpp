@@ -37,8 +37,8 @@ int main()
                 4,0,4,0,4,0,4,4,4,4,4,4,4,0,0,
                 4,0,4,0,4,5,4,4,4,4,4,4,4,5,4,
                 4,0,4,0,0,0,4,4,4,4,4,4,4,0,4,
-                4,0,4,0,4,0,4,4,4,4,4,4,4,0,4,
-                4,0,4,0,4,0,4,4,4,4,4,4,4,0,4,
+                4,0,4,0,4,0,4,4,4,4,4,0,0,0,4,
+                4,0,4,0,4,0,4,4,4,4,4,0,0,0,4,
                 4,0,0,0,0,0,0,0,5,0,0,0,0,0,4,
                 4,4,4,0,0,0,4,4,4,4,4,4,4,0,4
     };
@@ -48,7 +48,7 @@ int main()
 
    
     obj player = {1,1,playerid};  //Posicao inicial do personagem no console
-    inimigo inimigo = {13,13,inimigoid}; //posição inicial do inimigo no console
+    inimigo inimigo = {12,12,inimigoid}; //posição inicial do inimigo no console
     bomba bomba =  {0,0,bombaid,0};
     for(int x=0;x<=raio*4;x++){
         bomba.explosao[0][x].id = explosaoid;
@@ -62,9 +62,10 @@ int main()
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
         
         currentframe = m;
-         SumMapItens(currentframe,player);
-         if(bomba.status) SumMapItens(currentframe,bomba.bomba);
-         if(bomba.status == 2) SumMapExplosion(currentframe,bomba.explosao);
+         SumMapItens(currentframe,player); // adiciona o player na tela
+         if(bomba.status) SumMapItens(currentframe,bomba.bomba); //Adiciona a bomba se ela existe
+         if(bomba.status == 2) SumMapExplosion(currentframe,bomba.explosao); //adiciona o raio da explosão se ela explodiu
+         if(inimigo.status) SumMapItens(currentframe,inimigo.inimigo); //Adiciona o inimigo se ele está vivo
 
         ///executa os movimentos
          if ( _kbhit() ){
@@ -96,16 +97,17 @@ int main()
             }
         }     
         
+        
         if (inimigo.status) //se inimigo esta vivo
         {
-            inimigo.trigger = clock();
-            if (inimigo.status == 1 && inimigo.trigger - inimigo.set/CLOCKS_PER_SEC == 1)
+            if (inimigo.status == 1 && (inimigo.trigger - inimigo.set)/CLOCKS_PER_SEC == 1)
             {
                 inimigo.direcao = novaDirecaoInimigo(inimigo,currentframe);
-                inimigo.numeroPassos = rand()%3+1;
+                inimigo.numeroPassos = (rand()%10)+1;
                 inimigo.status = 2;
             }else{
-                MoveInimigo(inimigo,currentframe);
+                inimigo.trigger = clock();
+                if(inimigo.numeroPassos) MoveInimigo(inimigo,currentframe);
             }
             
         }

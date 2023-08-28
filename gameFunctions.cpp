@@ -36,9 +36,8 @@ void explodirBomba(bomba &bomba, map &mapa){
             bomba.explosao[i][j] = moveObject(bomba.bomba,direcoes[i][0]*(j+1),direcoes[i][1]*(j+1),mapa,true);
             if (bomba.explosao[i][j].x == bomba.bomba.x && bomba.explosao[i][j].y == bomba.bomba.y )canExpand = false;
             if (mapa.mapa[bomba.explosao[i][j].y][bomba.explosao[i][j].x] == paredefragilid){
-                canExpand = false;
                 mapa.mapa[bomba.explosao[i][j].y][bomba.explosao[i][j].x] = vazioid;
-
+                canExpand = false;
             }
         }
     }
@@ -88,4 +87,5 @@ void MoveInimigo(inimigo &inimigo, map mapa){
     }else{
         inimigo.inimigo = moveObject(inimigo.inimigo,inimigo.direcao.x*-1,inimigo.direcao.y*-1,mapa);
     }
+    inimigo.numeroPassos--;
 }
