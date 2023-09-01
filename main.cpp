@@ -7,7 +7,7 @@
 #include "gameFunctions.cpp"
 
 
-#define QtdObjetos 2
+
 
 
 
@@ -31,28 +31,22 @@ int main()
     ///ALERTA: NAO MODIFICAR O TRECHO DE CODIGO, ACIMA.
 
     
-    map m = {   4,4,4,4,4,4,4,4,4,4,4,4,4,0,4,
-                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                4,0,4,0,4,0,4,4,4,4,4,4,4,0,0,
-                4,0,4,0,4,0,4,4,4,4,4,4,4,0,0,
-                4,0,4,0,4,5,4,4,4,4,4,4,4,5,4,
-                4,0,4,0,0,0,4,4,4,4,4,4,4,0,4,
-                4,0,4,0,4,0,4,4,4,4,4,0,0,0,4,
-                4,0,4,0,4,0,4,4,4,4,4,0,0,0,4,
-                4,0,0,0,0,0,0,0,5,0,0,0,0,0,4,
-                4,4,4,0,0,0,4,4,4,4,4,4,4,0,4
-    };
+    
+
+    map m = MapaInicial;
 
     map currentframe = m;
 
 
-   
-    obj player = {1,1,playerid};  //Posicao inicial do personagem no console
-    inimigo inimigo = {12,12,inimigoid}; //posição inicial do inimigo no console
+
+    obj player = playerInicial;  //Posicao inicial do personagem no console
+    
     bomba bomba =  {0,0,bombaid,0};
     for(int x=0;x<=raio*4;x++){
         bomba.explosao[0][x].id = explosaoid;
     }
+    inimigo inimigo = inimigoInicial; //posição inicial do inimigo no console
+    inimigo.set = clock();
     //Variavel para tecla precionada
     char tecla;
     
@@ -63,10 +57,10 @@ int main()
         
         currentframe = m;
          SumMapItens(currentframe,player); // adiciona o player na tela
+         if(inimigo.status) SumMapItens(currentframe,inimigo.inimigo); //Adiciona o inimigo se ele está vivo
          if(bomba.status) SumMapItens(currentframe,bomba.bomba); //Adiciona a bomba se ela existe
          if(bomba.status == 2) SumMapExplosion(currentframe,bomba.explosao); //adiciona o raio da explosão se ela explodiu
-         if(inimigo.status) SumMapItens(currentframe,inimigo.inimigo); //Adiciona o inimigo se ele está vivo
-
+        
         ///executa os movimentos
          if ( _kbhit() ){
             tecla = getch();
@@ -98,21 +92,32 @@ int main()
         }     
         
         
+        //PROGRAMAÇÃO DO INIMIGO
         if (inimigo.status) //se inimigo esta vivo
         {
-            if (inimigo.status == 1 && (inimigo.trigger - inimigo.set)/CLOCKS_PER_SEC == 1)
+            if (Colide(inimigo.inimigo,currentframe,explosaoid)) inimigo.status = 0;
+            inimigo.trigger = clock();
+            if (inimigo.status == 1) 
             {
                 inimigo.direcao = novaDirecaoInimigo(inimigo,currentframe);
-                inimigo.numeroPassos = (rand()%10)+1;
+                inimigo.numeroPassos = (rand()%3)+1;
+                inimigo.set = clock();
                 inimigo.status = 2;
-            }else{
-                inimigo.trigger = clock();
-                if(inimigo.numeroPassos) MoveInimigo(inimigo,currentframe);
+            }else if (inimigo.status == 2){
+                if(inimigo.numeroPassos) {
+                    if((inimigo.trigger - inimigo.set)/CLOCKS_PER_SEC == 1)
+                    MoveInimigo(inimigo,currentframe);
+                }else{
+                    inimigo.status = 1;
+                }
             }
-            
         }
+        //FIM DO INIMIGO
 
 
+        if(Colide(player,currentframe,explosaoid) || Colide(player,currentframe,inimigoid)){
+            gameRestart(player,inimigo,m,bomba);
+        }
 
          draw_map(currentframe);
 

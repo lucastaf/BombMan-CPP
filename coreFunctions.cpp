@@ -6,7 +6,7 @@ using namespace std;
 
 #define sizex 15
 #define sizey 10
-#define raio 3
+#define raio 1
 //Ids
 #define vazioid 0
 #define explosaoid 1

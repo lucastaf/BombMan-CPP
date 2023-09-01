@@ -1,5 +1,20 @@
 #include "coreFunctions.cpp"
 
+#define QtdInimigos 1
+
+map MapaInicial = { 4,4,4,4,4,4,4,4,4,4,4,4,4,0,4,
+                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                    4,0,4,0,4,0,4,4,4,4,4,4,4,0,0,
+                    4,0,4,0,4,0,4,4,4,4,4,4,4,0,0,
+                    4,0,4,0,4,5,4,4,4,4,4,4,4,5,4,
+                    4,0,4,0,0,0,4,4,4,4,4,4,4,0,4,
+                    4,0,4,0,4,0,4,4,4,4,4,0,0,0,4,
+                    4,0,4,0,4,0,4,4,4,4,4,0,0,0,4,
+                    4,0,0,0,0,0,0,0,5,0,0,0,0,0,4,
+                    4,4,4,0,0,0,4,4,4,4,4,4,4,0,4
+    };
+    obj playerInicial = {1,2,playerid};
+    inimigo inimigoInicial = {5,1,inimigoid};
 
 void colocaBomba(obj player, bomba &bomba){
     bomba.status = 1;
@@ -82,10 +97,28 @@ obj novaDirecaoInimigo(inimigo inimigo, map mapa){
 }
 
 void MoveInimigo(inimigo &inimigo, map mapa){
-    if(CanMove(inimigo.inimigo,inimigo.direcao.x,inimigo.direcao.y,mapa)){
-        inimigo.inimigo = moveObject(inimigo.inimigo,inimigo.direcao.x,inimigo.direcao.y,mapa);
-    }else{
-        inimigo.inimigo = moveObject(inimigo.inimigo,inimigo.direcao.x*-1,inimigo.direcao.y*-1,mapa);
+    if(!CanMove(inimigo.inimigo,inimigo.direcao.x,inimigo.direcao.y,mapa)){
+        inimigo.direcao.x = inimigo.direcao.x * -1;
+        inimigo.direcao.y = inimigo.direcao.y * -1;
     }
+
+    inimigo.inimigo = moveObject(inimigo.inimigo,inimigo.direcao.x,inimigo.direcao.y,mapa);
+    inimigo.set = clock();
     inimigo.numeroPassos--;
 }
+
+bool Colide(obj objeto, map mapa, int id){
+    if(mapa.mapa[objeto.y][objeto.x] == id){
+        return true;
+    }
+    return false;
+}
+
+void gameRestart(obj &player, inimigo &inimigo, map &mapa, bomba &bomba){
+    player = playerInicial;
+    inimigo = inimigoInicial;
+    mapa = MapaInicial;
+    bomba.status = 0;
+    bomba.bomba.id = bombaid;
+}
+
