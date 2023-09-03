@@ -6,7 +6,7 @@ using namespace std;
 
 #define sizex 15
 #define sizey 10
-#define raio 1
+#define raio 5
 //Ids
 #define vazioid 0
 #define explosaoid 1
@@ -34,16 +34,16 @@ struct map{
 typedef struct map map;
 
 struct bomba{
-    obj bomba; //Objeto bomba (centro)
-    char status; //0 nao existe, 1 existe, 2 explodiu
+    obj bomba = {0,0,bombaid}; //Objeto bomba (centro)
+    char status = 0; //0 nao existe, 1 existe, 2 explodiu
     clock_t set,trigger; //Momento de armar a bomba e de explosão
     obj explosao[4][raio]; //Array com as particulas de explosão nas 4 direções
 };
 typedef struct bomba bomba;
 
 struct inimigo{
-    obj inimigo; //Objeto do inimigo
-    clock_t set, trigger; //Inicio da mudança de estado / final
+    obj inimigo = {0,0,inimigoid}; //Objeto do inimigo
+    clock_t set = clock(), trigger; //Inicio da mudança de estado / final
     char status = 1; //0 = morto, 1 = parado, 2 = andando
     int numeroPassos; //Passos a serem andados
     obj direcao; //Direção a ser andada (serve apenas como vetor, o ID é descartavel)

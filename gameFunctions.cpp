@@ -2,19 +2,29 @@
 
 #define QtdInimigos 1
 
-map MapaInicial = { 4,4,4,4,4,4,4,4,4,4,4,4,4,0,4,
-                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                    4,0,4,0,4,0,4,4,4,4,4,4,4,0,0,
-                    4,0,4,0,4,0,4,4,4,4,4,4,4,0,0,
-                    4,0,4,0,4,5,4,4,4,4,4,4,4,5,4,
-                    4,0,4,0,0,0,4,4,4,4,4,4,4,0,4,
-                    4,0,4,0,4,0,4,4,4,4,4,0,0,0,4,
-                    4,0,4,0,4,0,4,4,4,4,4,0,0,0,4,
-                    4,0,0,0,0,0,0,0,5,0,0,0,0,0,4,
-                    4,4,4,0,0,0,4,4,4,4,4,4,4,0,4
-    };
-    obj playerInicial = {1,2,playerid};
-    inimigo inimigoInicial = {5,1,inimigoid};
+    map MapaInicial;
+    obj playerInicial = {0,0,playerid};
+    inimigo inimigoInicial = {sizex-1,sizey-1,inimigoid};
+    int contInimigos = QtdInimigos;
+
+bool isEven(int i){
+    return !(i%2);
+};
+void gerarMapaInicial(map &mapa){
+ int i, j;
+
+ for(i = 0; i < sizey; i++){
+    for(j = 0; j < sizex; j++){
+        if(!isEven(i) && !isEven(j)){
+            mapa.mapa[i][j] = paredeid;
+        }
+        if(isEven(i) != isEven(j)){
+            if(!(rand()%3))
+                mapa.mapa[i][j] = paredefragilid;
+            }
+        }
+    }
+};
 
 void colocaBomba(obj player, bomba &bomba){
     bomba.status = 1; //status = bomba existe
@@ -98,16 +108,19 @@ obj novaDirecaoInimigo(inimigo inimigo, map mapa){
         i++;
     }
 
+    if (i==0){ //se não houver direção possível
+    // a nova direção será (0,0)
+        novaDirecao.x = 0;
+        novaDirecao.y = 0;
+        return novaDirecao;
+    }
+
     int novaDirecaoId = rand()%i; 
 
     novaDirecao.x = direcoes[novaDirecaoId].x;
     novaDirecao.y = direcoes[novaDirecaoId].y;
 
-    if (i==0){ //se não houver direção possível
-    // a nova direção será (0,0)
-        novaDirecao.x = 0;
-        novaDirecao.y = 0;
-    }
+    
 
     return novaDirecao;
 }
@@ -136,5 +149,6 @@ void gameRestart(obj &player, inimigo &inimigo, map &mapa, bomba &bomba){
     mapa = MapaInicial;
     bomba.status = 0;
     bomba.bomba.id = bombaid;
+    contInimigos = QtdInimigos;
 }
 
