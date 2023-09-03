@@ -51,6 +51,7 @@ int main()
     inimigo inimigo = {12,12,inimigoid}; //posição inicial do inimigo no console
     bomba bomba =  {0,0,bombaid,0};
     for(int x=0;x<=raio*4;x++){
+        //estabelece todas as explosões da bomba com um ID de uma explosão
         bomba.explosao[0][x].id = explosaoid;
     }
     //Variavel para tecla precionada

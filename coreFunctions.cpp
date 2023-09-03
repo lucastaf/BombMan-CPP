@@ -4,9 +4,10 @@
 #include<time.h>
 using namespace std;
 
-#define sizex 15
-#define sizey 10
-#define raio 3
+#define sizex 15 //Tamanho X do mapa
+#define sizey 10 //Tamanho Y do mapa
+#define raio 3 //Raio da bomba
+
 //Ids
 #define vazioid 0
 #define explosaoid 1
@@ -15,8 +16,12 @@ using namespace std;
 #define paredeid 4
 #define paredefragilid 5
 #define bombaid 6 
+//Cada objeto do cenario possui um ID proprio, esses IDs são categorizados e a programação do jogo gira em torno deles//
+//Player e inimigo não possuem colisão, eles podem ser atravessado, isso garante q seja detectado quando o player ou inimigo colidem um com o outro
+//Note que os objetos com colisão possuem um ID superior ao PlayerID, isso será útil no futuro para realizar testes de colisão
 
 struct obj{
+    //Struct de um objeto: possui um vetor x,y e um ID
     int x;
     int y;
     int id;
@@ -24,32 +29,33 @@ struct obj{
 typedef struct obj obj;
 
 struct map{
+    //Struct Map: possui apenas uma array de mapa para ser utilizado como return
     int mapa[sizey][sizex];
 };
 typedef struct map map;
 
 struct bomba{
-    obj bomba;
+    obj bomba; //Objeto bomba (centro)
     char status; //0 nao existe, 1 existe, 2 explodiu
-    clock_t set,trigger;
-    obj explosao[4][raio];
+    clock_t set,trigger; //Momento de armar a bomba e de explosão
+    obj explosao[4][raio]; //Array com as particulas de explosão nas 4 direções
 };
 typedef struct bomba bomba;
 
 struct inimigo{
-    obj inimigo;
-    clock_t set, trigger;
+    obj inimigo; //Objeto do inimigo
+    clock_t set, trigger; //Inicio da mudança de estado / final
     char status = 1; //0 = morto, 1 = parado, 2 = andando
-    int numeroPassos;
-    obj direcao;
+    int numeroPassos; //Passos a serem andados
+    obj direcao; //Direção a ser andada (serve apenas como vetor, o ID é descartavel)
 };
 typedef struct inimigo inimigo;
 
 void draw_map(map mapa){
         ///Imprime o jogo: mapa e personagem.
-        for(int i=0;i<sizey;i++){
-            for(int j=0;j<sizex;j++){
-                    switch (mapa.mapa[i][j]){
+        for(int i=0;i<sizey;i++){ //Para cada linha
+            for(int j=0;j<sizex;j++){ //Para cada coluna da linha
+                    switch (mapa.mapa[i][j]){ //Desenha o id daquele objeto
                         case vazioid: cout<<"\033[32m"<<char(219); break;//caminho - Verde
                         case explosaoid: cout<<"\033[31m"<<"#"; break;//explosao - Laranja
                         case inimigoid: cout<<"\033[31m"<<char(219); break;//inimigo - Vermelho
@@ -66,14 +72,22 @@ void draw_map(map mapa){
 } //fim for mapa
 
 obj moveObject(obj objeto,int Xmove, int Ymove, map mapa, bool isBomb = false){
-    if (objeto.x + Xmove >= 0 && objeto.x + Xmove < sizex){
-        if (mapa.mapa[objeto.y][objeto.x + Xmove] <= playerid){ //0 é vazio e 1 é explosao
-            objeto.x += Xmove;
+    //A função MoveObject verifica se o local que está tentando se mover é vazio,
+    //Se o local for vazio, ele se move, caso o contrario, retorna a instancia na direção original
+
+    //Testa colisão em X
+    if (objeto.x + Xmove >= 0 && objeto.x + Xmove < sizex){ //Verifica se o objeto estará dentro dos limite X do mapa
+        if (mapa.mapa[objeto.y][objeto.x + Xmove] <= playerid){ //Qual objeto com ID <= PlayerID é um objeto sem colisão
+            objeto.x += Xmove; //Se não houve colisão em X, o objeto se move em X
         }else
-        if(isBomb && mapa.mapa[objeto.y][objeto.x + Xmove] == paredefragilid){
-            objeto.x += Xmove;
+        if(isBomb && mapa.mapa[objeto.y][objeto.x + Xmove] == paredefragilid){ //Se o objeto for uma bomba, ele pode atravessar paredes frageis
+            objeto.x += Xmove; //Se colisão da bomba foi com uma parede fragil, ele se move
         }
     }
+    //----------
+
+    //Testa colisão em Y
+    //O código é o mesmo de cima, só muda para Y
     if (objeto.y + Ymove >= 0 && objeto.y + Ymove < sizey){
         if(mapa.mapa[objeto.y+Ymove][objeto.x] <= playerid){
             objeto.y += Ymove;
@@ -82,15 +96,36 @@ obj moveObject(obj objeto,int Xmove, int Ymove, map mapa, bool isBomb = false){
             objeto.y += Ymove;
         }
     }
-    return objeto;
+    //----------
+    return objeto; //Retorna o objeto, estando ele movido ou nao
+}
+
+bool CanMove(obj objeto, int xMove, int yMove,map mapa){
+    //A função CanMove testa se um objeto pode se mover a partir da logica da moveObject
+    //A função MoveObject só move se for possível se mover, 
+    //então se o objeto retornado for igual ao enviado, ele não se moveu (logo não pode se mover)
+
+    if (xMove == 0 && yMove == 0){ //Movimentar em 0 em x e y ele sempre podera se mover
+        return 0;
+    }
+    obj objetoMovido = moveObject(objeto,xMove,yMove,mapa);
+    if(objetoMovido.x == objeto.x && objetoMovido.y == objeto.y){
+        return false;
+    }else{
+        return true;
+    }
+    
 }
 
 map SumMapItens(map &mapa, obj objeto){
+    //Essa função adiciona um único objeto dentro de um mapa
     mapa.mapa[objeto.y][objeto.x] = objeto.id;
     return mapa; 
 }
 
 map SumMapExplosion(map &mapa, obj objeto[4][raio]){
+    //Essa função adiciona todos as instancias de uma explosão,
+    //as explosões são colocadas dentro de uma matriz dentro da struct bomba
     for (int i = 0; i < 4; i++){
         for(int j = 0;j < raio; j ++){
             mapa.mapa[objeto[i][j].y][objeto[i][j].x] = objeto[i][j].id;
@@ -99,11 +134,3 @@ map SumMapExplosion(map &mapa, obj objeto[4][raio]){
     return mapa;
 }
 
-bool CanMove(obj objeto, int xMove, int yMove,map mapa){
-    obj objetoMovido = moveObject(objeto,xMove,yMove,mapa);
-    if(objetoMovido.x == objeto.x && objetoMovido.y == objeto.y){
-        return false;
-    }else{
-        return true;
-    }
-}
