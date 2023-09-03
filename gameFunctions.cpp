@@ -1,15 +1,36 @@
 #include "coreFunctions.cpp"
 
-#define QtdInimigos 1
+
 
     map MapaInicial;
     obj playerInicial = {0,0,playerid};
-    inimigo inimigoInicial = {sizex-1,sizey-1,inimigoid};
+    inimigo inimigsoIniciais[QtdInimigos];
     int contInimigos = QtdInimigos;
 
-bool isEven(int i){
-    return !(i%2);
-};
+
+
+void gerarInimigosIniciais(inimigo inimigos[QtdInimigos], inimigo inimigosInstancias[QtdInimigos]){
+    bool isNewSpace;
+    for(int i = 0; i < QtdInimigos; i++){
+        
+        do{
+            isNewSpace = true;
+            inimigos[i].inimigo.x = (rand()%((sizex+1)/2))*2;
+            inimigos[i].inimigo.y = (rand()%((sizey+1)/2))*2;
+            if(inimigos[i].inimigo.x == 0 && inimigos[i].inimigo.y == 0) {isNewSpace == false; continue;}
+            for(int j = 0; j < i; j++){
+                if(inimigos[i].inimigo.x == inimigos[j].inimigo.x && inimigos[i].inimigo.y == inimigos[j].inimigo.y){
+                    isNewSpace = false;
+                    break;
+                }
+            }
+        }while(!isNewSpace);
+        inimigosInstancias[i] = inimigsoIniciais[i];
+
+    }
+
+}
+
 void gerarMapaInicial(map &mapa){
  int i, j;
 
@@ -143,12 +164,14 @@ bool Colide(obj objeto, map mapa, int id){
     return false;
 }
 
-void gameRestart(obj &player, inimigo &inimigo, map &mapa, bomba &bomba){
+void gameRestart(obj &player, inimigo inimigos[QtdInimigos], map &mapa, bomba &bomba){
     player = playerInicial;
-    inimigo = inimigoInicial;
     mapa = MapaInicial;
     bomba.status = 0;
     bomba.bomba.id = bombaid;
     contInimigos = QtdInimigos;
+    for (int i = 0; i < QtdInimigos; i++){
+        inimigos[i] = inimigsoIniciais[i];
+    }
 }
 

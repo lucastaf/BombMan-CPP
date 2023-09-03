@@ -4,9 +4,10 @@
 #include<time.h>
 using namespace std;
 
+#define QtdInimigos 5
 #define sizex 15
 #define sizey 10
-#define raio 5
+#define raio 1
 //Ids
 #define vazioid 0
 #define explosaoid 1
@@ -70,29 +71,43 @@ void draw_map(map mapa){
             }
 } //fim for mapa
 
-obj moveObject(obj objeto,int Xmove, int Ymove, map mapa, bool isBomb = false){
+bool isInsideMap(obj objeto, int xMove, int yMove){
+    int i = true;
+    if (xMove != 0){
+     if (!(objeto.x + xMove >= 0 && objeto.x + xMove < sizex)){
+        i = false;
+     }
+    }
+
+    if (yMove != 0){
+     if (!(objeto.y + yMove >= 0 && objeto.y + yMove < sizey)){
+        i = false;
+     }    
+    }
+    return i;
+}
+
+obj moveObject(obj objeto,int xMove, int yMove, map mapa, bool isBomb = false){
     //A função MoveObject verifica se o local que está tentando se mover é vazio,
     //Se o local for vazio, ele se move, caso o contrario, retorna a instancia na direção original
 
     //Testa colisão em X
-    if (objeto.x + Xmove >= 0 && objeto.x + Xmove < sizex){ //Verifica se o objeto estará dentro dos limite X do mapa
-        if (mapa.mapa[objeto.y][objeto.x + Xmove] <= playerid){ //Qual objeto com ID <= PlayerID é um objeto sem colisão
-            objeto.x += Xmove; //Se não houve colisão em X, o objeto se move em X
+    if (isInsideMap(objeto,xMove,yMove)){ 
+        //Testa colisões em X
+        if (mapa.mapa[objeto.y][objeto.x + xMove] <= playerid){ //Qualquer objeto com ID <= PlayerID é um objeto sem colisão
+            objeto.x += xMove; //Se não houve colisão em X, o objeto se move em X
         }else
-        if(isBomb && mapa.mapa[objeto.y][objeto.x + Xmove] == paredefragilid){ //Se o objeto for uma bomba, ele pode atravessar paredes frageis
-            objeto.x += Xmove; //Se colisão da bomba foi com uma parede fragil, ele se move
+        if(isBomb && mapa.mapa[objeto.y][objeto.x + xMove] == paredefragilid){ //Se o objeto for uma bomba, ele pode atravessar paredes frageis
+            objeto.x += xMove; //Se colisão da bomba foi com uma parede fragil, ele se move
         }
-    }
-    //----------
 
-    //Testa colisão em Y
-    //O código é o mesmo de cima, só muda para Y
-    if (objeto.y + Ymove >= 0 && objeto.y + Ymove < sizey){
-        if(mapa.mapa[objeto.y+Ymove][objeto.x] <= playerid){
-            objeto.y += Ymove;
+        //Testa colisão em Y
+        //O código é o mesmo de cima, só muda para Y
+        if(mapa.mapa[objeto.y+yMove][objeto.x] <= playerid){
+            objeto.y += yMove;
         }else
-        if(isBomb && mapa.mapa[objeto.y+Ymove][objeto.x] == paredefragilid){
-            objeto.y += Ymove;
+        if(isBomb && mapa.mapa[objeto.y+yMove][objeto.x] == paredefragilid){
+            objeto.y += yMove;
         }
     }
     //----------
@@ -133,3 +148,6 @@ map SumMapExplosion(map &mapa, obj objeto[4][raio]){
     return mapa;
 }
 
+bool isEven(int i){
+    return !(i%2);
+};

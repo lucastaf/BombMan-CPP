@@ -6,15 +6,8 @@
 
 #include "screenLoops.cpp"
 
-
-
-
-    
-
-
 int main()
 {
-
     ///ALERTA: NAO MODIFICAR O TRECHO DE CODIGO, A SEGUIR.
         //INICIO: COMANDOS PARA QUE O CURSOR NAO FIQUE PISCANDO NA TELA
         srand(time(NULL));
@@ -30,7 +23,10 @@ int main()
         coord.Y = 0;
         //FIM: COMANDOS PARA REPOSICIONAR O CURSOR NO INICIO DA TELA
     ///ALERTA: NAO MODIFICAR O TRECHO DE CODIGO, ACIMA.
+    if(QtdInimigos > ((sizex+1)/2)*((sizey+1)/2)-1) return 0;
+
     gerarMapaInicial(MapaInicial);
+    gerarInimigosIniciais(inimigsoIniciais,inimigos);
     m = MapaInicial;
     for(int x=0;x<=raio*4;x++){
         //estabelece todas as explosões da bomba com um ID de uma explosão
@@ -43,6 +39,9 @@ int main()
         ///Posiciona a escrita no início do console
         SetConsoleCursorPosition(out, coord);
         switch(gameStatus){
+            case InMenu:
+                mainMenuLoop();
+            break;
             case InGame:
                 MainGameLoop();
             break;
@@ -51,6 +50,9 @@ int main()
             break;
             case Vicotry:
                 GameOverLoop(1);
+            break;
+            case InMapEditor:
+                mapEditorLoop();
             break;
         }
         
