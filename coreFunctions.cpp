@@ -8,7 +8,7 @@ using namespace std;
 #define sizex 15
 #define sizey 10
 #define raio 1
-//Ids
+//Ids de objetos
 #define vazioid 0
 #define explosaoid 1
 #define inimigoid 2
@@ -75,9 +75,11 @@ void draw_map(map mapa){
 } //fim for mapa
 
 void draw_hud(obj item, int Iditem){
+    //A função de desenhar o hud serve para imprimir a primeira linha do editor de mapas
     cout << "\033[37m>> ";
     switch (item.id)
     {
+        //Essa função desenha apenas se o item q está selecionado é um player ou um inimigo
     case playerid: cout<<"\033[33m"<<char(219); break;
     case inimigoid: cout<<"\033[31m"<<char(219); break;
     }
@@ -86,6 +88,7 @@ void draw_hud(obj item, int Iditem){
 }
 
 bool isInsideMap(obj objeto, int xMove, int yMove){
+    //Inimide map testa se um objeto estara dentro do mapa após ele se mover
     int i = true;
     if (xMove != 0){
      if (!(objeto.x + xMove >= 0 && objeto.x + xMove < sizex)){
@@ -129,12 +132,12 @@ obj moveObject(obj objeto,int xMove, int yMove, map mapa, bool isBomb = false){
 }
 
 bool CanMove(obj objeto, int xMove, int yMove,map mapa){
-    //A função CanMove testa se um objeto pode se mover a partir da logica da moveObject
+    //A função CanMove testa se um objeto pode se mover a partir da logica da moveObject:
     //A função MoveObject só move se for possível se mover, 
     //então se o objeto retornado for igual ao enviado, ele não se moveu (logo não pode se mover)
 
     if (xMove == 0 && yMove == 0){ //Movimentar em 0 em x e y ele sempre podera se mover
-        return 0;
+        return true;
     }
     obj objetoMovido = moveObject(objeto,xMove,yMove,mapa);
     if(objetoMovido.x == objeto.x && objetoMovido.y == objeto.y){
@@ -163,5 +166,5 @@ map SumMapExplosion(map &mapa, obj objeto[4][raio]){
 }
 
 bool isEven(int i){
-    return !(i%2);
+    return !(i%2); //Função simples para saber se um número é par
 };

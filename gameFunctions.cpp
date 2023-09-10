@@ -1,25 +1,29 @@
 #include "coreFunctions.cpp"
-inimigo inimigos[QtdInimigos];
-obj* objetos[QtdInimigos + 1];
 
+obj* objetos[QtdInimigos + 1]; //A array com todos os objetos será útil para o editor de mapas
 
+    //As variaveis inicias servirão como base sempre que houver um gamerestart
     map MapaInicial;
     obj playerInicial = {0,0,playerid};
-    inimigo inimigsoIniciais[QtdInimigos];
+    inimigo inimigsoIniciais[QtdInimigos]; //Array com todos os inimigos, possibilitando varios ao mesmo tempo na tela
     int contInimigos = QtdInimigos;
-    obj player = playerInicial;  //Posicao inicial do personagem no consoled
+    //------
 
+    obj player = playerInicial;  //Posicao inicial do personagem no consoled
+    inimigo inimigos[QtdInimigos]; 
 
 
 void gerarInimigosIniciais(inimigo inimigos[QtdInimigos], inimigo inimigosInstancias[QtdInimigos]){
     bool isNewSpace;
+    //Essa função gera inimigos dentro dos espaço em branco que sobraram do mapa,
+    //e testa se o local gerado não havia spawnado outro inimigo anteriormente 
     for(int i = 0; i < QtdInimigos; i++){
         
         do{
             isNewSpace = true;
             inimigos[i].inimigo.x = (rand()%((sizex+1)/2))*2;
             inimigos[i].inimigo.y = (rand()%((sizey+1)/2))*2;
-            if(inimigos[i].inimigo.x == 0 && inimigos[i].inimigo.y == 0) isNewSpace == false;
+            if(inimigos[i].inimigo.x == 0 && inimigos[i].inimigo.y == 0) isNewSpace == false; //0,0 é o spawn do player
             for(int j = 0; j < i; j++){
                 if(inimigos[i].inimigo.x == inimigos[j].inimigo.x && inimigos[i].inimigo.y == inimigos[j].inimigo.y){
                     isNewSpace = false;
@@ -34,7 +38,7 @@ void gerarInimigosIniciais(inimigo inimigos[QtdInimigos], inimigo inimigosInstan
 
 void gerarMapaInicial(map &mapa){
  int i, j;
-
+    //o mapa é gerado formando com paredes padronizadas e paredesfrageis de forma aleatoria
  for(i = 0; i < sizey; i++){
     for(j = 0; j < sizex; j++){
         if(!isEven(i) && !isEven(j)){
@@ -49,11 +53,13 @@ void gerarMapaInicial(map &mapa){
 };
 
 void preencherObjetos(){
+    //Preenche os ponteiros da array objetos com os endereços do player e de todos inimigos;
     objetos[0] = &player;
     for(int i = 1;i <= QtdInimigos; i++){
         objetos[i] = &inimigos[i-1].inimigo;
     }
 }
+
 void colocaBomba(obj player, bomba &bomba){
     bomba.status = 1; //status = bomba existe
     bomba.bomba.x = player.x; 
@@ -82,7 +88,7 @@ void explodirBomba(bomba &bomba, map &mapa){
         -1,0,
     };
 
-    for (int i = 0; i < 4; i ++){ //mara cada versor de direção
+    for (int i = 0; i < 4; i ++){ //para cada versor de direção
         canExpand = true; //a bomba pode expandir
 
         for (int j = 0; j < raio; j ++){ //para cada item dentro daquela direção
@@ -95,7 +101,7 @@ void explodirBomba(bomba &bomba, map &mapa){
             //A instancia da explosão sera colocada na direção do versor atual vezes a itensidade atual definida por J
             bomba.explosao[i][j] = moveObject(bomba.bomba,direcoes[i][0]*(j+1),direcoes[i][1]*(j+1),mapa,true); 
             
-            //poderia usar a função CanExpand, mas verificar o X e Y seria mais simples neste caso
+            //Caso não houve alteração na explosão após o MoveObject, a bomba irá parar de expandir
             if (bomba.explosao[i][j].x == bomba.bomba.x && bomba.explosao[i][j].y == bomba.bomba.y )canExpand = false;
             
             if (mapa.mapa[bomba.explosao[i][j].y][bomba.explosao[i][j].x] == paredefragilid){ //se a explosão atingiu uma parede fragil
@@ -155,6 +161,7 @@ obj novaDirecaoInimigo(inimigo inimigo, map mapa){
 
 void MoveInimigo(inimigo &inimigo, map mapa){
     if(!CanMove(inimigo.inimigo,inimigo.direcao.x,inimigo.direcao.y,mapa)){
+        //Se o inimigo não poder se mover na direção dada, a direção irá gira 180°
         inimigo.direcao.x = inimigo.direcao.x * -1;
         inimigo.direcao.y = inimigo.direcao.y * -1;
     }
@@ -165,13 +172,15 @@ void MoveInimigo(inimigo &inimigo, map mapa){
 }
 
 bool Colide(obj objeto, map mapa, int id){
-    if(mapa.mapa[objeto.y][objeto.x] == id){
+    //Verifica se um objeto colide com outro objeto dentro do mapa
+    if(mapa.mapa[objeto.y][objeto.x] == id){ //Se o x e y do mapa naquele ponto for igual ao id enviado
         return true;
     }
     return false;
 }
 
 void gameRestart(obj &player, inimigo inimigos[QtdInimigos], map &mapa, bomba &bomba){
+    //Define todas as variaveis para as condições inicias
     player = playerInicial;
     mapa = MapaInicial;
     bomba.status = 0;

@@ -23,7 +23,7 @@ int main()
         coord.Y = 0;
         //FIM: COMANDOS PARA REPOSICIONAR O CURSOR NO INICIO DA TELA
     ///ALERTA: NAO MODIFICAR O TRECHO DE CODIGO, ACIMA.
-    if(QtdInimigos > ((sizex+1)/2)*((sizey+1)/2)-1) return 0;
+    if(QtdInimigos > ((sizex+1)/2)*((sizey+1)/2)-1) return 0; //essa linha serve para crashar o jogo propositalmente caso o número de inimigos seja maior que a qunatidade de espaços livres
 
     gerarMapaInicial(MapaInicial);
     gerarInimigosIniciais(inimigsoIniciais,inimigos);
@@ -54,6 +54,9 @@ int main()
             break;
             case InMapEditor:
                 mapEditorLoop();
+            break;
+            case tutorial:
+                tutorialLoop();
             break;
         }
         
