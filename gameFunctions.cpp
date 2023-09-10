@@ -1,11 +1,13 @@
 #include "coreFunctions.cpp"
-
+inimigo inimigos[QtdInimigos];
+obj* objetos[QtdInimigos + 1];
 
 
     map MapaInicial;
     obj playerInicial = {0,0,playerid};
     inimigo inimigsoIniciais[QtdInimigos];
     int contInimigos = QtdInimigos;
+    obj player = playerInicial;  //Posicao inicial do personagem no consoled
 
 
 
@@ -17,11 +19,10 @@ void gerarInimigosIniciais(inimigo inimigos[QtdInimigos], inimigo inimigosInstan
             isNewSpace = true;
             inimigos[i].inimigo.x = (rand()%((sizex+1)/2))*2;
             inimigos[i].inimigo.y = (rand()%((sizey+1)/2))*2;
-            if(inimigos[i].inimigo.x == 0 && inimigos[i].inimigo.y == 0) {isNewSpace == false; continue;}
+            if(inimigos[i].inimigo.x == 0 && inimigos[i].inimigo.y == 0) isNewSpace == false;
             for(int j = 0; j < i; j++){
                 if(inimigos[i].inimigo.x == inimigos[j].inimigo.x && inimigos[i].inimigo.y == inimigos[j].inimigo.y){
                     isNewSpace = false;
-                    break;
                 }
             }
         }while(!isNewSpace);
@@ -47,6 +48,12 @@ void gerarMapaInicial(map &mapa){
     }
 };
 
+void preencherObjetos(){
+    objetos[0] = &player;
+    for(int i = 1;i <= QtdInimigos; i++){
+        objetos[i] = &inimigos[i-1].inimigo;
+    }
+}
 void colocaBomba(obj player, bomba &bomba){
     bomba.status = 1; //status = bomba existe
     bomba.bomba.x = player.x; 

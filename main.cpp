@@ -27,6 +27,7 @@ int main()
 
     gerarMapaInicial(MapaInicial);
     gerarInimigosIniciais(inimigsoIniciais,inimigos);
+    preencherObjetos();
     m = MapaInicial;
     for(int x=0;x<=raio*4;x++){
         //estabelece todas as explosões da bomba com um ID de uma explosão

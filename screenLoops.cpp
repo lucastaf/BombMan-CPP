@@ -7,23 +7,25 @@
 #define Defeat 3
 #define Vicotry 4
 //
+int Iditemselecionado = 0;
 char gameStatus = InMenu;
 
     map m;
     map currentframe = m;
-    obj player = playerInicial;  //Posicao inicial do personagem no consoled
     bomba bomba1;
-    inimigo inimigos[QtdInimigos];
+    obj ghost = {0,0,ghostid};
+
     char tecla;
 
 void MainGameLoop(){
     currentframe = m;
     SumMapItens(currentframe,player); // adiciona o player na tela
-    if(bomba1.status) SumMapItens(currentframe,bomba1.bomba); //Adiciona a bomba se ela existe
-    if(bomba1.status == 2) SumMapExplosion(currentframe,bomba1.explosao); //adiciona o raio da explosão se ela explodiu
     for (int i = 0; i < QtdInimigos; i ++){
         if(inimigos[i].status) SumMapItens(currentframe,inimigos[i].inimigo); //Adiciona o inimigo se ele está vivo
     }
+    if(bomba1.status) SumMapItens(currentframe,bomba1.bomba); //Adiciona a bomba se ela existe
+    if(bomba1.status == 2) SumMapExplosion(currentframe,bomba1.explosao); //adiciona o raio da explosão se ela explodiu
+
     ///executa os movimentos
         if ( _kbhit() ){
             tecla = getch();
@@ -112,6 +114,7 @@ void GameOverLoop(char IsWinner){
          }
     }
 
+    cout << "\033[37m";
     cout << "\nGame Over \n\n";
     if(IsWinner){
         cout << "You Win!"<<"\n\n";
@@ -137,7 +140,7 @@ void mainMenuLoop(){
             return;
         }
     }
-
+    cout << "\033[37m";
     cout << "\nBomberMan - C++ 1.0 \n\n";
         cout << "Press Space to Play"<<"\n\n";
     
@@ -153,27 +156,33 @@ void mapEditorLoop(){
             tecla = getch();
             switch(tecla)
             {
-                case 72: case 'w': ///cima
-                    if (isInsideMap(player,0,-1)) player.y --;
+                case 72: case 'w': if (isInsideMap(ghost,0,-1)) ghost.y --; break; ///cima
+                case 80: case 's': if(isInsideMap(ghost,0,1)) ghost.y ++; break; ///baixo
+                case 75:case 'a':  if(isInsideMap(ghost,-1,0)) ghost.x --; break; ///esquerda
+                case 77: case 'd': if(isInsideMap(ghost,1,0)) ghost.x ++; break; ///direita
+                
+                //A array objetos possui QtdInimigos+1 itens, logo QtdInimigos é o último ID da array
+                case 'q':
+                    if (Iditemselecionado>0){
+                        Iditemselecionado--;
+                    } else{
+                        Iditemselecionado = QtdInimigos; //Ultimo ID
+                    }
                 break;
-                case 80: case 's': ///baixo
-                    if(isInsideMap(player,0,1)) player.y ++;
+                case 'e':
+                    if(Iditemselecionado<QtdInimigos){ //Id selecionado menor q o ultimo ID
+                        Iditemselecionado++;
+                    }else{
+                        Iditemselecionado = 0;
+                    }
                 break;
-                case 75:case 'a': ///esquerda
-                    if(isInsideMap(player,-1,0)) player.x --;
+                case ' ': //Bara de espaço
+                    objetos[Iditemselecionado]->x = ghost.x;
+                    objetos[Iditemselecionado]->y = ghost.y;
                 break;
-                case 77: case 'd': ///direita
-                    if(isInsideMap(player,1,0)) player.x ++;
-                break;
-                case 'z':
-                    m.mapa[player.y][player.x] = vazioid;
-                break;
-                case 'x':
-                    m.mapa[player.y][player.x] = paredeid;
-                break;
-                case 'c':
-                    m.mapa[player.y][player.x] = paredefragilid;
-                break;
+                case 'z': m.mapa[player.y][player.x] = vazioid; break;
+                case 'x': m.mapa[player.y][player.x] = paredeid;break;
+                case 'c': m.mapa[player.y][player.x] = paredefragilid; break;
                 case 27: //ESC
                     gameRestart(player,inimigos,m,bomba1);
                     system("cls");
@@ -182,6 +191,10 @@ void mapEditorLoop(){
                 break;
                 case 13: //Enter
                     MapaInicial = m;
+                    playerInicial = player;
+                    for(int i = 0;i<QtdInimigos;i++){
+                        inimigsoIniciais[i] = inimigos[i];
+                    }
                     gameRestart(player,inimigos,m,bomba1);
                     system("cls");
                     gameStatus = InMenu;
@@ -190,7 +203,10 @@ void mapEditorLoop(){
             }
          }
         //------------------
-
-        currentframe = SumMapItens(currentframe,player);
+        for(int i = 0; i <= QtdInimigos; i++){
+            currentframe = SumMapItens(currentframe,*objetos[i]);
+        }
+        currentframe = SumMapItens(currentframe,ghost);
+        draw_hud(*objetos[Iditemselecionado],Iditemselecionado);
         draw_map(currentframe);
 }

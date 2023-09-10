@@ -16,6 +16,8 @@ using namespace std;
 #define paredeid 4
 #define paredefragilid 5
 #define bombaid 6 
+#define ghostid 7
+
 //Cada objeto do cenario possui um ID proprio, esses IDs são categorizados e a programação do jogo gira em torno deles//
 //Player e inimigo não possuem colisão, eles podem ser atravessado, isso garante q seja detectado quando o player ou inimigo colidem um com o outro
 //Note que os objetos com colisão possuem um ID superior ao PlayerID, isso será útil no futuro para realizar testes de colisão
@@ -63,6 +65,7 @@ void draw_map(map mapa){
                         case paredeid: cout<<"\033[97m"<<char(219); break;//parede - cinza
                         case paredefragilid: cout<<"\033[37m"<<char(219); break;//parede fragil - branca
                         case bombaid: cout<<"\033[30m"<<char(219); break;//bomba - Preta
+                        case ghostid: cout<<"\033[36m"<<char(219); break;//fantasma - ciano
                         
                         default: cout<<"-"; //erro
                     } //fim switch
@@ -70,6 +73,17 @@ void draw_map(map mapa){
                 cout<<"\n";
             }
 } //fim for mapa
+
+void draw_hud(obj item, int Iditem){
+    cout << "\033[37m>> ";
+    switch (item.id)
+    {
+    case playerid: cout<<"\033[33m"<<char(219); break;
+    case inimigoid: cout<<"\033[31m"<<char(219); break;
+    }
+    cout << "\033[37m <<";
+    cout << "Item Selecionado: " << Iditem <<"\n";
+}
 
 bool isInsideMap(obj objeto, int xMove, int yMove){
     int i = true;
