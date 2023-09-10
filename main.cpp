@@ -1,6 +1,16 @@
 /**
     Estrutura inicial para um jogo de labirinto
     versão: 0.1 (Felski)
+
+    Trabalho Bomberman feito por:
+    Lucas Bittencourt Rauch
+    Milca Leite Pereira Barreto
+
+    Link do Github: https://github.com/lucastaf/BombMan-CPP
+
+    Modificações propositais:
+-O player é capaz de colocar uma bomba em cima de mesmo, mas não é capaz de andar por cima da bomba depois disso,
+essa era a mecanica do game original
 */
 
 

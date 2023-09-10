@@ -4,8 +4,8 @@
 #include<time.h>
 using namespace std;
 
-#define QtdInimigos 5
-#define sizex 15
+#define QtdInimigos 4
+#define sizex 10
 #define sizey 10
 #define raio 1
 //Ids de objetos

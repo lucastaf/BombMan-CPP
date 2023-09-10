@@ -15,23 +15,28 @@ obj* objetos[QtdInimigos + 1]; //A array com todos os objetos será útil para o
 
 void gerarInimigosIniciais(inimigo inimigos[QtdInimigos], inimigo inimigosInstancias[QtdInimigos]){
     bool isNewSpace;
+    int x,y;
     //Essa função gera inimigos dentro dos espaço em branco que sobraram do mapa,
     //e testa se o local gerado não havia spawnado outro inimigo anteriormente 
     for(int i = 0; i < QtdInimigos; i++){
         
         do{
             isNewSpace = true;
-            inimigos[i].inimigo.x = (rand()%((sizex+1)/2))*2;
-            inimigos[i].inimigo.y = (rand()%((sizey+1)/2))*2;
-            if(inimigos[i].inimigo.x == 0 && inimigos[i].inimigo.y == 0) isNewSpace == false; //0,0 é o spawn do player
+
+            x = (rand()%((sizex+1)/2))*2;
+            y = (rand()%((sizey+1)/2))*2;
+            if(x == 0 && y == 0){ //0,0 é o spawn do player
+                isNewSpace = false;
+            }  
             for(int j = 0; j < i; j++){
-                if(inimigos[i].inimigo.x == inimigos[j].inimigo.x && inimigos[i].inimigo.y == inimigos[j].inimigo.y){
+                if(x == inimigos[j].inimigo.x && y == inimigos[j].inimigo.y){
                     isNewSpace = false;
                 }
             }
         }while(!isNewSpace);
+        inimigos[i].inimigo.x = x;
+        inimigos[i].inimigo.y = y;
         inimigosInstancias[i] = inimigsoIniciais[i];
-
     }
 
 }
