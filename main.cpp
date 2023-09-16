@@ -68,6 +68,9 @@ int main()
             case tutorial:
                 tutorialLoop();
             break;
+            case fileScreen:
+                fileLoop();
+            break;
         }
         
 

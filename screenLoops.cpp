@@ -1,4 +1,4 @@
-#include "gameFunctions.cpp"
+#include "fileFunctions.cpp"
 
 //Define gamestatus ==>
 #define InMenu 0
@@ -7,6 +7,7 @@
 #define Defeat 3
 #define Vicotry 4
 #define tutorial 5
+#define fileScreen 6
 //
 int Iditemselecionado = 0; //Id do item selecionado no editor de mapas
 char gameStatus = InMenu; //gameStatus irá definir qual tela será renderizada
@@ -134,21 +135,28 @@ void GameOverLoop(char IsWinner){
 void mainMenuLoop(){
     if ( _kbhit() ){
         tecla = getch();
-        if(tecla == ' '){ //barra de espaço
+        switch(tecla){
+        case ' ': //barra de espaço
             system("cls");
             gameRestart(player,inimigos,m,bomba1);
             gameStatus = InGame;
             return;
-         }
-        if(tecla == 'z'){
+        break;
+        case 'z':
             system("cls");
             gameStatus = InMapEditor;
             return;
-        }
-        if(tecla == 'x'){
+        break;
+        case 'x':
             system("cls");
             gameStatus = tutorial;
             return;
+        break;
+        case 'c':
+            system("cls");
+            gameStatus = fileScreen;
+            return;
+        break;
         }
     }
     cout << "\033[37m";
@@ -156,7 +164,8 @@ void mainMenuLoop(){
     cout << "Press Space to Play"<<"\n\n";
     
     cout << "Press 'z' to Map Editor\n";
-    cout << "Press 'x' to tutorial";
+    cout << "Press 'x' to tutorial\n";
+    cout << "Press 'c' to import a file";
 
 }
 
@@ -248,4 +257,38 @@ void tutorialLoop(){
     cout << "C = Parede fragil\n";
     cout << "\nPressione ESC para retornar ao menu";
 
+}
+
+void fileLoop(){
+    char escolha;
+    string arquivo;
+    cout << "Seletor de arquivos >> Digite 1 para importar e 2 para exportar um arquivo,\n";
+    cout << "Entre qualquer outro valor para retornar ao menu \n";
+    cin >> escolha;
+    
+    switch (escolha)
+    {
+    case '1':
+        cout << "Digite o nome do arquivo que deseja importar \n";
+        cin >> arquivo;
+        importFile(arquivo);
+        system("cls");
+        gameRestart(player,inimigos,m,bomba1);
+        gameStatus = InMenu;
+        return;
+    break;
+    case '2':
+        cout << "Digite o nome do arquivo que sera gerado \n";
+        cin >> arquivo;
+        exportFile(arquivo);
+        system("cls");
+        gameStatus = InMenu;
+        return;
+    break;
+    default:
+        system("cls");
+        gameStatus = InMenu;
+        return;
+    break;
+    }
 }

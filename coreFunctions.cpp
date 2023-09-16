@@ -4,7 +4,7 @@
 #include<time.h>
 using namespace std;
 
-#define QtdInimigos 4
+#define QtdInimigos 2
 #define sizex 10
 #define sizey 10
 #define raio 1
