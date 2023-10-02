@@ -1,7 +1,7 @@
-#include "gameFunctions.cpp"
+#include "gameFunctions.h"
 #include <fstream>
 
-void importFile(string name){
+void importFile(string name, gameState &game){
     ifstream arquivo;
     arquivo.open(name);
     int inimigoindex = 0;
@@ -12,25 +12,25 @@ void importFile(string name){
         return;
     }
     getline(arquivo,name); //Ignora a primeira linha e descarta na variavel name
-    for (int i = 0; i < sizey; i ++){
-        for (int j = 0;j < sizex; j ++){
+    for (int i = 0; i < game.mapa.sizeY; i ++){
+        for (int j = 0;j < game.mapa.sizeX; j ++){
             int digito = arquivo.get() - 48;
             cout << digito;
             switch (digito)
             {
             case playerid:
-                playerInicial.x = j;
-                playerInicial.y = i;
-                MapaInicial.mapa[i][j] = vazioid;
+                game.players[0].objeto.x = j;
+                game.players[0].objeto.y = i;
+                game.mapa.mapa[i][j] = vazioid;
             break;
             case inimigoid:
-                inimigsoIniciais[inimigoindex].inimigo.x = j;
-                inimigsoIniciais[inimigoindex].inimigo.y = i;
-                MapaInicial.mapa[i][j] = vazioid;
+                game.inimigos[inimigoindex].objeto.x = j;
+                game.inimigos[inimigoindex].objeto.y = i;
+                game.mapa.mapa[i][j] = vazioid;
                 inimigoindex++;
             break;
             default:
-                MapaInicial.mapa[i][j] = digito;
+                game.mapa.mapa[i][j] = digito;
             break;
             }
             arquivo.get(); //Pula a virgula
@@ -46,11 +46,11 @@ void importFile(string name){
 
 }
 
-void exportFile(string name){
-    map mapaeditado = MapaInicial;
-    mapaeditado.mapa[playerInicial.y][playerInicial.x] = playerid;
-    for (int i = 0; i < QtdInimigos; i++){
-        obj inimigoatual = inimigsoIniciais[i].inimigo;
+void exportFile(string name, gameState game){
+    map mapaeditado = game.mapa;
+    mapaeditado.mapa[game.players[0].objeto.y][game.players[0].objeto.x] = playerid;
+    for (int i = 0; i < game.QtdInimigos; i++){
+        obj inimigoatual = game.inimigos[i].objeto;
         mapaeditado.mapa[inimigoatual.y][inimigoatual.x] = inimigoid;
     }
 
@@ -60,8 +60,8 @@ void exportFile(string name){
     
 
     arquivo << "sep=, \n";
-    for (int i = 0; i < sizey; i++){
-        for (int j = 0; j < sizex; j++){
+    for (int i = 0; i < game.mapa.sizeY; i++){
+        for (int j = 0; j < game.mapa.sizeX; j++){
             arquivo << mapaeditado.mapa[i][j];
             arquivo << ",";
         }
