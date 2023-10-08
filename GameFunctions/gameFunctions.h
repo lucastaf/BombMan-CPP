@@ -2,25 +2,18 @@
 
 //obj player = playerInicial; // Posicao inicial do personagem no consoled
 
-bool Colide(obj objeto, map mapa, int id)
-{
-    // Verifica se um objeto colide com outro objeto dentro do mapa
-    if (mapa.mapa[objeto.y][objeto.x] == id)
-    { // Se o x e y do mapa naquele ponto for igual ao id enviado
-        return true;
-    }
-    return false;
-}
+
 
 struct gameState
 {
     int QtdPlayers = 1;
-    int QtdInimigos = 2;
+    int QtdInimigos = 1;
     int contInimigos = QtdInimigos;
+    int contPlayers = QtdPlayers;
     map mapa;
-    inimigo *inimigos;
-    player *players = new player[1];
-    obj *objetos = new obj[QtdInimigos + QtdPlayers]; // A array com todos os objetos será útil para o editor de mapas
+    inimigo *inimigos = new inimigo[QtdInimigos];
+    player *players = new player[QtdPlayers];
+    obj **objetos; // A array com todos os objetos será útil para o editor de mapas
     gameState()
     {
         preencherObjetos();
@@ -29,11 +22,13 @@ struct gameState
     void Restart(gameState gameOriginal)
     {
         // Define todas as variaveis para as condições inicias
+        delete players;
+        delete inimigos;
         QtdPlayers = gameOriginal.QtdPlayers;
         QtdInimigos = gameOriginal.QtdInimigos;
-        mapa = gameOriginal.mapa;
+        mapa.copyMap(gameOriginal.mapa);
         contInimigos = QtdInimigos;
-
+        contPlayers = QtdPlayers;
         players = new player[QtdPlayers];
         inimigos = new inimigo[QtdInimigos];
         for (int i = 0; i < QtdPlayers; i++)
@@ -77,38 +72,107 @@ struct gameState
         }
     }
 
-    void gerarMapa()
-    {
-        int i, j;
-        // o mapa é gerado formando com paredes padronizadas e paredesfrageis de forma aleatoria
-        for (i = 0; i < mapa.sizeY; i++)
-        {
-            for (j = 0; j < mapa.sizeX; j++)
-            {
-                if (!isEven(i) && !isEven(j))
-                {
-                    mapa.mapa[i][j] = paredeid;
-                }
-                if (isEven(i) != isEven(j))
-                {
-                    if (!(rand() % 3))
-                        mapa.mapa[i][j] = paredefragilid;
-                }
-            }
-        }
-    };
-
     void preencherObjetos()
     {
+        objetos = new obj*[QtdInimigos + QtdPlayers];
         // Preenche os ponteiros da array objetos com os endereços do player e de todos inimigos;
         for (int i = 0; i < QtdPlayers; i++){
             //Do ID 0 até o ID qtd de players
-            objetos[i] = players[i].objeto;
+            objetos[i] = &players[i].objeto;
         }
         for (int i = QtdPlayers - 1; i < QtdPlayers-1 + QtdInimigos ; i++)
         {
             //Do ID após a quantidade de players ate o ulitmo ID(Players+inimigos);
-            objetos[i] = inimigos[i].objeto;
+            objetos[i] = &inimigos[i].objeto;
+        }
+    }
+
+    void inimigosFrameAction(map currentframe){
+            // PROGRAMAÇÃO DO INIMIGO
+    for (int i = 0; i < QtdInimigos; i++)
+    {                           // para cada um dos inimigos
+        if (inimigos[i].status) // se inimigo esta vivo
+        {
+            if (inimigos[i].objeto.Colide(currentframe, explosaoid))
+            {                           // se o inimigo colide com uma explosão
+                inimigos[i].status = 0; // ele morre
+                contInimigos--;         // a quantidade de inimigos diminui
+            }
+            inimigos[i].trigger = clock();
+            if (inimigos[i].status == 1) // se ele está parado
+            {
+                inimigos[i].novaDirecaoInimigo(currentframe); // gera uma nova direção
+                inimigos[i].numeroPassos = (rand() % 3) + 1;                         // o número de passos é aleatorio
+                inimigos[i].set = clock();
+                inimigos[i].status = 2; // o inimigo passa a se mover
+            }
+            else if (inimigos[i].status == 2) // se ele está se movendo
+            {
+                if (inimigos[i].numeroPassos) // se ainda há passos a serem andados
+                {
+                    if ((inimigos[i].trigger - inimigos[i].set) / CLOCKS_PER_SEC == 1)
+                        inimigos[i].move(currentframe);
+                }
+                else
+                {
+                    inimigos[i].status = 1; // o inimigo passa a ficar parado
+                }
+            }
+        }
+    }
+    // FIM DO INIMIGO
+    }
+
+    void KeyboardHitActions(map currentframe){
+        char tecla = getch();
+        switch (tecla)
+        {
+        case 72:
+        case 'w': /// cima
+            players[0].objeto.move(0, -1, currentframe);
+            break;
+        case 80:
+        case 's': /// baixo
+            players[0].objeto.move(0, 1, currentframe);
+            break;
+        case 75:
+        case 'a': /// esquerda
+            players[0].objeto.move(-1, 0, currentframe);
+            break;
+        case 77:
+        case 'd': /// direita
+            players[0].objeto.move(1, 0, currentframe);
+            break;
+        case ' ': // Barra de espaço
+            if (!players[0].bomba.status)
+                players[0].colocabomba(); // Coloca a bomba se ela não existe
+            break;
+        }
+    }
+
+    void AddItensToMap(map &currentframe){
+            currentframe.SumItens(players[0].objeto.toCore()); // adiciona o player na tela
+    for (int i = 0; i < QtdInimigos; i++)
+    {
+        if (inimigos[i].status)
+            currentframe.SumItens(inimigos[i].objeto.toCore()); // Adiciona o inimigo se ele está vivo
+    }
+    if (players[0].bomba.status)
+        currentframe.SumItens(players[0].bomba.objeto.toCore()); // Adiciona a bomba se ela existe
+    if (players[0].bomba.status == 2)
+        SumExplosion(players[0].bomba, currentframe); // adiciona o raio da explosão se ela explodiu
+    }
+
+    void SumExplosion(bomba bomba, map &currentframe)
+    {
+        // Essa função adiciona todos as instancias de uma explosão,
+        // as explosões são colocadas dentro de uma matriz dentro da struct bomba
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < bomba.raio; j++)
+            {
+                currentframe.mapa[bomba.explosao[i][j].y][bomba.explosao[i][j].x] = bomba.explosao[i][j].id;
+            }
         }
     }
 };

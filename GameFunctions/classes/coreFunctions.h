@@ -17,9 +17,115 @@ using namespace std;
 // Cada objeto do cenario possui um ID proprio, esses IDs são categorizados e a programação do jogo gira em torno deles//
 // Player e inimigo não possuem colisão, eles podem ser atravessado, isso garante q seja detectado quando o player ou inimigo colidem um com o outro
 // Note que os objetos com colisão possuem um ID superior ao PlayerID, isso será útil no futuro para realizar testes de colisão
+struct objcore{
+    int x;
+    int y;
+    int id;
+};
 
-struct map;
+bool isEven(int i)
+{
+    return !(i % 2); // Função simples para saber se um número é par
+};
 
+struct map
+{
+    // Struct Map: possui apenas uma array de mapa para ser utilizado como return
+    int sizeX = 10;
+    int sizeY = 10;
+    int **mapa;
+
+    map(){
+        mapa = new int*[sizeY];
+        for (int i = 0; i < sizeY; i++){
+            mapa[i] = new int[sizeX];
+            for(int j = 0; j < sizeX; j++){
+                mapa[i][j] = vazioid;
+            }
+        }
+        gerarMapa();
+
+    };
+
+        void gerarMapa()
+    {
+        // o mapa é gerado formando com paredes padronizadas e paredesfrageis de forma aleatoria
+        for (int i = 0; i < sizeY; i++)
+        {
+            for (int j = 0; j < sizeX; j++)
+            {
+                if (!isEven(i) && !isEven(j))
+                {
+                    mapa[i][j] = paredeid;
+                }
+                if (isEven(i) != isEven(j))
+                {
+                    if (!(rand() % 3))
+                        mapa[i][j] = paredefragilid;
+                }
+            }
+        }
+    };
+
+    void draw_map()
+    {
+        /// Imprime o jogo: mapa e personagem.
+        for (int i = 0; i < sizeY; i++)
+        { // Para cada linha
+            for (int j = 0; j < sizeX; j++)
+            { // Para cada coluna da linha
+                switch (mapa[i][j])
+                { // Desenha o id daquele objeto
+                case vazioid:
+                    cout << "\033[32m" << char(219);
+                    break; // caminho - Verde
+                case explosaoid:
+                    cout << "\033[31m"
+                         << "#";
+                    break; // explosao - Laranja
+                case inimigoid:
+                    cout << "\033[31m" << char(219);
+                    break; // inimigo - Vermelho
+                case playerid:
+                    cout << "\033[33m" << char(219);
+                    break; // Player - Amarelo
+                case paredeid:
+                    cout << "\033[97m" << char(219);
+                    break; // parede - cinza
+                case paredefragilid:
+                    cout << "\033[37m" << char(219);
+                    break; // parede fragil - branca
+                case bombaid:
+                    cout << "\033[30m" << char(219);
+                    break; // bomba - Preta
+                case ghostid:
+                    cout << "\033[36m" << char(219);
+                    break; // fantasma - ciano
+
+                default:
+                    cout << "-"; // erro
+                }                // fim switch
+            }
+            cout << "\n";
+        }
+
+    } // fim for mapa
+
+    void SumItens(objcore objeto)
+    {
+        // Essa função adiciona um único objeto dentro de um mapa
+        mapa[objeto.y][objeto.x] = objeto.id;
+    }
+
+    void copyMap(map originmap){
+        for(int i = 0; i < sizeY; i++){
+            for(int j = 0; j < sizeX; j++){
+                mapa[i][j] = originmap.mapa[i][j];
+            }
+        }
+    }
+
+};
 
 struct obj
 {
@@ -27,6 +133,14 @@ struct obj
     int x;
     int y;
     int id;
+
+    objcore toCore(){
+        objcore i;
+        i.x = x;
+        i.y = y;
+        i.id = id;
+        return i;
+    }
 
     void move(int xMove, int yMove, map mapa, bool isBomb = false)
     {
@@ -104,8 +218,26 @@ struct obj
             return true;
         }
     }
-};
 
+    bool Colide(map mapa, int id)
+    {
+        // Verifica se um objeto colide com outro objeto dentro do mapa
+        if (mapa.mapa[y][x] == id)
+        { // Se o x e y do mapa naquele ponto for igual ao id enviado
+            return true;
+        }
+        return false;
+    }
+    bool Colide(map mapa, int id, int id2)
+    {
+        // Verifica se um objeto colide com outro objeto dentro do mapa
+        if (mapa.mapa[y][x] == id || mapa.mapa[y][x] == id2)
+        { // Se o x e y do mapa naquele ponto for igual ao id enviado
+            return true;
+        }
+        return false;
+    }
+};
 
 void draw_hud(obj item, int Iditem)
 {
@@ -125,7 +257,4 @@ void draw_hud(obj item, int Iditem)
     cout << "Item Selecionado: " << Iditem << "\n";
 }
 
-bool isEven(int i)
-{
-    return !(i % 2); // Função simples para saber se um número é par
-};
+

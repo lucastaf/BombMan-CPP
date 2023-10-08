@@ -1,4 +1,4 @@
-#include "mapa.h"
+#include "coreFunctions.h"
 
 struct bomba
 {
@@ -6,7 +6,7 @@ struct bomba
     char status = 0;              // 0 nao existe, 1 existe, 2 explodiu
     clock_t set, trigger;         // Momento de armar a bomba e de explosão
     obj *explosao[4];             // Array com as particulas de explosão nas 4 direções
-    int raio = 1;                 // raio da Bomba
+    int raio = 2;                 // raio da Bomba
 
     bomba()
     {
@@ -21,6 +21,8 @@ struct bomba
             explosao[i] = new obj[newRaio];
             for (int j = 0; j < newRaio; j++)
             {
+                explosao[i][j].x = 0;
+                explosao[i][j].y = 0;
                 explosao[i][j].id = explosaoid;
             }
         }
@@ -67,10 +69,10 @@ struct bomba
 
             for (int j = 0; j < raio; j++)
             { // para cada item dentro daquela direção
+                explosao[i][j] = objeto;
                 if (!canExpand)
                 {
                     // se a bomba não poder expandir mais, a explosão sera colocada dentro do centro da bomba
-                    explosao[i][j] = objeto;
                     continue;
                 }
                 // Caso ela ainda possa expandir

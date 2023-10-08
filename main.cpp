@@ -1,6 +1,6 @@
 /**
     Estrutura inicial para um jogo de labirinto
-    versão: 0.1 (Felski)
+    versão: 0.5 (Felski)
 
     Trabalho Bomberman feito por:
     Lucas Bittencourt Rauch
@@ -13,7 +13,7 @@
 essa era a mecanica do game original
 */
 
-#include "GameFunctions/screenLoops.h"
+#include "GameFunctions/mainGameLoop.h"
 
 int main()
 {
@@ -22,7 +22,7 @@ int main()
     srand(time(NULL));
     HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_CURSOR_INFO cursorInfo;
-    GetConsoleCursorInfo(out, &cursorInfo);
+    GetConsoleCursorInfo(out, &cursorInfo); 
     cursorInfo.bVisible = false; // set the cursor visibility
     SetConsoleCursorInfo(out, &cursorInfo);
     // FIM: COMANDOS PARA QUE O CURSOR NÃO FIQUE PISCANDO NA TELA
@@ -32,13 +32,9 @@ int main()
     coord.Y = 0;
     // FIM: COMANDOS PARA REPOSICIONAR O CURSOR NO INICIO DA TELA
     /// ALERTA: NAO MODIFICAR O TRECHO DE CODIGO, ACIMA.
-    if (QtdInimigos > ((sizex + 1) / 2) * ((sizey + 1) / 2) - 1)
-        return 0; // essa linha serve para crashar o jogo propositalmente caso o número de inimigos seja maior que a qunatidade de espaços livres
-
-    gerarMapaInicial(MapaInicial);
-    gerarInimigosIniciais(inimigsoIniciais, inimigos);
-    preencherObjetos();
-    m = MapaInicial;
+  
+    defaultGame.gerarInimigos();
+    currentGame.Restart(defaultGame);
 
     while (true) // Loop principal do Jogo
     {
