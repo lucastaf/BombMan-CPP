@@ -7,7 +7,7 @@
 struct gameState
 {
     int QtdPlayers = 1;
-    int QtdInimigos = 1;
+    int QtdInimigos = 2;
     int contInimigos = QtdInimigos;
     int contPlayers = QtdPlayers;
     map mapa;
@@ -74,13 +74,14 @@ struct gameState
 
     void preencherObjetos()
     {
+        delete objetos;
         objetos = new obj*[QtdInimigos + QtdPlayers];
         // Preenche os ponteiros da array objetos com os endereços do player e de todos inimigos;
         for (int i = 0; i < QtdPlayers; i++){
             //Do ID 0 até o ID qtd de players
             objetos[i] = &players[i].objeto;
         }
-        for (int i = QtdPlayers - 1; i < QtdPlayers-1 + QtdInimigos ; i++)
+        for (int i = QtdPlayers; i < QtdPlayers + QtdInimigos ; i++)
         {
             //Do ID após a quantidade de players ate o ulitmo ID(Players+inimigos);
             objetos[i] = &inimigos[i].objeto;

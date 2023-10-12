@@ -2,7 +2,7 @@
 
 void mapEditorLoop()
 {
-
+    currentGame.preencherObjetos();
     currentframe.copyMap(currentGame.mapa);
     /// executa os movimentos
     if (_kbhit())
@@ -35,7 +35,7 @@ void mapEditorLoop()
         case 'q': // seleciona o proximo item
             if (Iditemselecionado > 0)
             {
-                Iditemselecionado--;
+                Iditemselecionado-= 1;
             }
             else
             {
@@ -45,7 +45,7 @@ void mapEditorLoop()
         case 'e': // seleciona o item anterior
             if (Iditemselecionado < currentGame.QtdInimigos + currentGame.QtdPlayers - 1)
             { // Id selecionado menor q o ultimo ID
-                Iditemselecionado++;
+                Iditemselecionado+= 1;
             }
             else
             {
@@ -82,7 +82,7 @@ void mapEditorLoop()
     }
     //------------------
     currentGame.AddItensToMap(currentframe);
-    draw_hud(*currentGame.objetos[Iditemselecionado], Iditemselecionado);
+    draw_hud(currentGame.objetos[Iditemselecionado]->id, Iditemselecionado);
     currentframe.SumItens(ghost.toCore());
     currentframe.draw_map();
 }

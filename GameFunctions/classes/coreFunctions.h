@@ -239,11 +239,11 @@ struct obj
     }
 };
 
-void draw_hud(obj item, int Iditem)
+void draw_hud(int itemId, int itemIndex)
 {
     // A função de desenhar o hud serve para imprimir a primeira linha do editor de mapas
     cout << "\033[37m>> ";
-    switch (item.id)
+    switch (itemId)
     {
         // Essa função desenha apenas se o item q está selecionado é um player ou um inimigo
     case playerid:
@@ -254,7 +254,7 @@ void draw_hud(obj item, int Iditem)
         break;
     }
     cout << "\033[37m <<";
-    cout << "Item Selecionado: " << Iditem << "\n";
+    cout << "Item Selecionado: " << itemIndex << "\n";
 }
 
 
