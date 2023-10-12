@@ -16,7 +16,7 @@ struct gameState
     obj **objetos; // A array com todos os objetos será útil para o editor de mapas
     gameState()
     {
-        preencherObjetos();
+        //preencherObjetos();
     }
 
     void Restart(gameState gameOriginal)
@@ -74,17 +74,17 @@ struct gameState
 
     void preencherObjetos()
     {
-        delete objetos;
+        delete []objetos;
         objetos = new obj*[QtdInimigos + QtdPlayers];
         // Preenche os ponteiros da array objetos com os endereços do player e de todos inimigos;
         for (int i = 0; i < QtdPlayers; i++){
             //Do ID 0 até o ID qtd de players
             objetos[i] = &players[i].objeto;
         }
-        for (int i = QtdPlayers; i < QtdPlayers + QtdInimigos ; i++)
+        for (int i = QtdPlayers; i < QtdPlayers + QtdInimigos; i++)
         {
             //Do ID após a quantidade de players ate o ulitmo ID(Players+inimigos);
-            objetos[i] = &inimigos[i].objeto;
+            objetos[i] = &inimigos[i - QtdPlayers].objeto;
         }
     }
 
@@ -173,6 +173,19 @@ struct gameState
             for (int j = 0; j < bomba.raio; j++)
             {
                 currentframe.mapa[bomba.explosao[i][j].y][bomba.explosao[i][j].x] = bomba.explosao[i][j].id;
+            }
+        }
+    }
+
+    void resizeMap(int newX, int newY){
+        mapa.resize(newX, newY);
+        preencherObjetos();
+        for(int i = 0; i < QtdInimigos + QtdPlayers; i ++){
+            if (objetos[i]->x >= newX){
+                objetos[i]->x = newX - 1;
+            }
+            if(objetos[i]->y >= newY){
+                objetos[i]->y = newY - 1;
             }
         }
     }

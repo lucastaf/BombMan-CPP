@@ -17,7 +17,8 @@ using namespace std;
 // Cada objeto do cenario possui um ID proprio, esses IDs são categorizados e a programação do jogo gira em torno deles//
 // Player e inimigo não possuem colisão, eles podem ser atravessado, isso garante q seja detectado quando o player ou inimigo colidem um com o outro
 // Note que os objetos com colisão possuem um ID superior ao PlayerID, isso será útil no futuro para realizar testes de colisão
-struct objcore{
+struct objcore
+{
     int x;
     int y;
     int id;
@@ -31,23 +32,51 @@ bool isEven(int i)
 struct map
 {
     // Struct Map: possui apenas uma array de mapa para ser utilizado como return
-    int sizeX = 10;
-    int sizeY = 10;
+    int sizeX = 0;
+    int sizeY = 0;
     int **mapa;
 
-    map(){
-        mapa = new int*[sizeY];
-        for (int i = 0; i < sizeY; i++){
-            mapa[i] = new int[sizeX];
-            for(int j = 0; j < sizeX; j++){
-                mapa[i][j] = vazioid;
-            }
-        }
+    map()
+    {
+        resize(10,10);
         gerarMapa();
-
     };
 
-        void gerarMapa()
+    void resize(int newX, int newY)
+    {
+        int **oldmap = mapa;
+        int oldX = sizeX, oldY = sizeY;
+        sizeX = newX;
+        sizeY = newY;
+        //Declara nova matriz
+        mapa = new int*[sizeY];
+        for (int i = 0; i < sizeY; i ++ ){
+            mapa[i] = new int[sizeX];
+        }
+        //repassa os valores
+        for (int i = 0; i < sizeY; i++){
+            if(i < oldY){
+                for(int j = 0; j < sizeX; j++){
+                    if(j < oldX){
+                        mapa[i][j] = oldmap[i][j];
+                    }else{
+                        mapa[i][j] = vazioid;
+                    }
+                }
+            }else{
+                for(int j = 0; j < sizeX; j++){
+                    mapa[i][j] = vazioid;
+                }
+            }
+        }
+        //Apaga o mapa antigo
+        for(int i = 0; i < oldY; i++){
+            delete []oldmap[i];
+        }
+        delete[] oldmap;
+    };
+
+    void gerarMapa()
     {
         // o mapa é gerado formando com paredes padronizadas e paredesfrageis de forma aleatoria
         for (int i = 0; i < sizeY; i++)
@@ -117,14 +146,16 @@ struct map
         mapa[objeto.y][objeto.x] = objeto.id;
     }
 
-    void copyMap(map originmap){
-        for(int i = 0; i < sizeY; i++){
-            for(int j = 0; j < sizeX; j++){
+    void copyMap(map originmap)
+    {
+        for (int i = 0; i < sizeY; i++)
+        {
+            for (int j = 0; j < sizeX; j++)
+            {
                 mapa[i][j] = originmap.mapa[i][j];
             }
         }
     }
-
 };
 
 struct obj
@@ -134,7 +165,8 @@ struct obj
     int y;
     int id;
 
-    objcore toCore(){
+    objcore toCore()
+    {
         objcore i;
         i.x = x;
         i.y = y;
@@ -228,6 +260,7 @@ struct obj
         }
         return false;
     }
+
     bool Colide(map mapa, int id, int id2)
     {
         // Verifica se um objeto colide com outro objeto dentro do mapa
@@ -256,5 +289,3 @@ void draw_hud(int itemId, int itemIndex)
     cout << "\033[37m <<";
     cout << "Item Selecionado: " << itemIndex << "\n";
 }
-
-

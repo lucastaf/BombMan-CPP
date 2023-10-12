@@ -1,6 +1,12 @@
 #include "gameFunctions.h"
 #include <fstream>
+/*
+clock atual - clock armado = x (tempo restante)
+clock armado(set) = clock atual(clock()) - x(na save) 
 
+quando carregado
+clock atual - x = clock armado
+*/
 void importFile(string name, gameState &game){
     ifstream arquivo;
     arquivo.open(name);

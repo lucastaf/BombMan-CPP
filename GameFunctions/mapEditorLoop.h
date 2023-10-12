@@ -12,22 +12,22 @@ void mapEditorLoop()
         {
         case 72:
         case 'w':
-            if (ghost.isInsideMap(0, -1,currentframe))
+            if (ghost.isInsideMap(0, -1, currentframe))
                 ghost.y--;
             break; /// cima
         case 80:
         case 's':
-            if (ghost.isInsideMap(0, 1,currentframe))
+            if (ghost.isInsideMap(0, 1, currentframe))
                 ghost.y++;
             break; /// baixo
         case 75:
         case 'a':
-            if (ghost.isInsideMap(-1, 0,currentframe))
+            if (ghost.isInsideMap(-1, 0, currentframe))
                 ghost.x--;
             break; /// esquerda
         case 77:
         case 'd':
-            if (ghost.isInsideMap(1, 0,currentframe))
+            if (ghost.isInsideMap(1, 0, currentframe))
                 ghost.x++;
             break; /// direita
 
@@ -35,7 +35,7 @@ void mapEditorLoop()
         case 'q': // seleciona o proximo item
             if (Iditemselecionado > 0)
             {
-                Iditemselecionado-= 1;
+                Iditemselecionado -= 1;
             }
             else
             {
@@ -45,7 +45,7 @@ void mapEditorLoop()
         case 'e': // seleciona o item anterior
             if (Iditemselecionado < currentGame.QtdInimigos + currentGame.QtdPlayers - 1)
             { // Id selecionado menor q o ultimo ID
-                Iditemselecionado+= 1;
+                Iditemselecionado += 1;
             }
             else
             {
@@ -78,11 +78,16 @@ void mapEditorLoop()
             gameStatus = InMenu;
             return;
             break;
+        case 't':
+            currentframe.resize(5,5);
+            currentGame.resizeMap(5,5);
+            system("cls");
+            break;
         }
     }
-    //------------------
-    currentGame.AddItensToMap(currentframe);
-    draw_hud(currentGame.objetos[Iditemselecionado]->id, Iditemselecionado);
-    currentframe.SumItens(ghost.toCore());
-    currentframe.draw_map();
+        //------------------
+        currentGame.AddItensToMap(currentframe);
+        draw_hud(currentGame.objetos[Iditemselecionado]->id, Iditemselecionado);
+        currentframe.SumItens(ghost.toCore());
+        currentframe.draw_map();
 }
