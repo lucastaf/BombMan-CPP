@@ -10,11 +10,13 @@ struct bomba
 
     bomba()
     {
-        resizeRaio(raio);
+        resizeRaio(raio, false);
     }
 
-    void resizeRaio(int newRaio)
+    void resizeRaio(int newRaio, bool deleteOld = true)
     {
+        if (deleteOld)
+            deleteBomba();
         raio = newRaio;
         for (int i = 0; i < 4; i++)
         {
@@ -34,6 +36,14 @@ struct bomba
         objeto.x = player.x;
         objeto.y = player.y; // a bomba vai para a posição do player
         set = clock();       // é dado o set da bomba
+    }
+
+    void deleteBomba()
+    {
+        delete[] explosao[0];
+        delete[] explosao[1];
+        delete[] explosao[2];
+        delete[] explosao[3];
     }
 
     void explodirBomba(map &mapa)

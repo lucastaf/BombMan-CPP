@@ -22,7 +22,7 @@ int main()
     srand(time(NULL));
     HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_CURSOR_INFO cursorInfo;
-    GetConsoleCursorInfo(out, &cursorInfo); 
+    GetConsoleCursorInfo(out, &cursorInfo);
     cursorInfo.bVisible = false; // set the cursor visibility
     SetConsoleCursorInfo(out, &cursorInfo);
     // FIM: COMANDOS PARA QUE O CURSOR NÃO FIQUE PISCANDO NA TELA
@@ -32,7 +32,7 @@ int main()
     coord.Y = 0;
     // FIM: COMANDOS PARA REPOSICIONAR O CURSOR NO INICIO DA TELA
     /// ALERTA: NAO MODIFICAR O TRECHO DE CODIGO, ACIMA.
-  
+
     defaultGame.gerarInimigos();
     currentGame.Restart(defaultGame);
 
@@ -57,6 +57,8 @@ int main()
         case InMapEditor:
             mapEditorLoop();
             break;
+        case InMapEditorConfig:
+             break;
         case tutorial:
             tutorialLoop();
             break;

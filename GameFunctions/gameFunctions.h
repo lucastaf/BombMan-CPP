@@ -1,8 +1,19 @@
 #include "classes/player.h"
 
-//obj player = playerInicial; // Posicao inicial do personagem no consoled
+// obj player = playerInicial; // Posicao inicial do personagem no consoled
 
-
+void SumMapExplosion(bomba bomba, map &currentframe)
+{
+    // Essa função adiciona todos as instancias de uma explosão,
+    // as explosões são colocadas dentro de uma matriz dentro da struct bomba
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < bomba.raio; j++)
+        {
+            currentframe.mapa[bomba.explosao[i][j].y][bomba.explosao[i][j].x] = bomba.explosao[i][j].id;
+        }
+    }
+}
 
 struct gameState
 {
@@ -13,29 +24,31 @@ struct gameState
     map mapa;
     inimigo *inimigos = new inimigo[QtdInimigos];
     player *players = new player[QtdPlayers];
-    obj **objetos; // A array com todos os objetos será útil para o editor de mapas
+    obj **objetos = new obj *[QtdInimigos + QtdPlayers]; // A array com todos os objetos será útil para o editor de mapas
     gameState()
     {
-        //preencherObjetos();
+        // preencherObjetos();
     }
 
-    void Restart(gameState gameOriginal)
+    void Restart(gameState gameOriginal, bool resizeNeeded = false)
     {
         // Define todas as variaveis para as condições inicias
-        delete players;
-        delete inimigos;
+        if (resizeNeeded)
+        {
+            resizePlayers(gameOriginal.QtdPlayers);
+            resizeInimigos(gameOriginal.QtdInimigos);
+        }
         QtdPlayers = gameOriginal.QtdPlayers;
         QtdInimigos = gameOriginal.QtdInimigos;
-        mapa.copyMap(gameOriginal.mapa);
+        mapa.copyMap(gameOriginal.mapa, resizeNeeded);
         contInimigos = QtdInimigos;
         contPlayers = QtdPlayers;
-        players = new player[QtdPlayers];
-        inimigos = new inimigo[QtdInimigos];
         for (int i = 0; i < QtdPlayers; i++)
         {
             players[i] = gameOriginal.players[i];
         }
-        for (int i = 0; i < QtdInimigos; i ++){
+        for (int i = 0; i < QtdInimigos; i++)
+        {
             inimigos[i] = gameOriginal.inimigos[i];
         }
     }
@@ -74,119 +87,154 @@ struct gameState
 
     void preencherObjetos()
     {
-        delete []objetos;
-        objetos = new obj*[QtdInimigos + QtdPlayers];
+        delete[] objetos;
+        objetos = new obj *[QtdInimigos + QtdPlayers];
         // Preenche os ponteiros da array objetos com os endereços do player e de todos inimigos;
-        for (int i = 0; i < QtdPlayers; i++){
-            //Do ID 0 até o ID qtd de players
+        for (int i = 0; i < QtdPlayers; i++)
+        {
+            // Do ID 0 até o ID qtd de players
             objetos[i] = &players[i].objeto;
         }
         for (int i = QtdPlayers; i < QtdPlayers + QtdInimigos; i++)
         {
-            //Do ID após a quantidade de players ate o ulitmo ID(Players+inimigos);
+            // Do ID após a quantidade de players ate o ulitmo ID(Players+inimigos);
             objetos[i] = &inimigos[i - QtdPlayers].objeto;
         }
     }
 
-    void inimigosFrameAction(map currentframe){
-            // PROGRAMAÇÃO DO INIMIGO
-    for (int i = 0; i < QtdInimigos; i++)
-    {                           // para cada um dos inimigos
-        if (inimigos[i].status) // se inimigo esta vivo
-        {
-            if (inimigos[i].objeto.Colide(currentframe, explosaoid))
-            {                           // se o inimigo colide com uma explosão
-                inimigos[i].status = 0; // ele morre
-                contInimigos--;         // a quantidade de inimigos diminui
-            }
-            inimigos[i].trigger = clock();
-            if (inimigos[i].status == 1) // se ele está parado
+    void inimigosFrameAction(map currentframe)
+    {
+        // PROGRAMAÇÃO DO INIMIGO
+        for (int i = 0; i < QtdInimigos; i++)
+        {                           // para cada um dos inimigos
+            if (inimigos[i].status) // se inimigo esta vivo
             {
-                inimigos[i].novaDirecaoInimigo(currentframe); // gera uma nova direção
-                inimigos[i].numeroPassos = (rand() % 3) + 1;                         // o número de passos é aleatorio
-                inimigos[i].set = clock();
-                inimigos[i].status = 2; // o inimigo passa a se mover
-            }
-            else if (inimigos[i].status == 2) // se ele está se movendo
-            {
-                if (inimigos[i].numeroPassos) // se ainda há passos a serem andados
-                {
-                    if ((inimigos[i].trigger - inimigos[i].set) / CLOCKS_PER_SEC == 1)
-                        inimigos[i].move(currentframe);
+                if (inimigos[i].objeto.Colide(currentframe, explosaoid))
+                {                           // se o inimigo colide com uma explosão
+                    inimigos[i].status = 0; // ele morre
+                    contInimigos--;         // a quantidade de inimigos diminui
                 }
-                else
+                inimigos[i].trigger = clock();
+                if (inimigos[i].status == 1) // se ele está parado
                 {
-                    inimigos[i].status = 1; // o inimigo passa a ficar parado
+                    inimigos[i].novaDirecaoInimigo(currentframe); // gera uma nova direção
+                    inimigos[i].numeroPassos = (rand() % 3) + 1;  // o número de passos é aleatorio
+                    inimigos[i].set = clock();
+                    inimigos[i].status = 2; // o inimigo passa a se mover
+                }
+                else if (inimigos[i].status == 2) // se ele está se movendo
+                {
+                    if (inimigos[i].numeroPassos) // se ainda há passos a serem andados
+                    {
+                        if ((inimigos[i].trigger - inimigos[i].set) / CLOCKS_PER_SEC == inimigos[i].tempoDePasso)
+                            inimigos[i].move(currentframe);
+                    }
+                    else
+                    {
+                        inimigos[i].status = 1; // o inimigo passa a ficar parado
+                    }
+                }
+            }
+        }
+        // FIM DO INIMIGO
+    }
+
+    void bombFrameAction(map currentframe)
+    {
+        for (int i = 0; i < QtdPlayers; i++)
+        {
+            if (players[i].bomba.status)
+            { // se a bomba existe
+                players[i].bomba.trigger = clock();
+                if ((players[i].bomba.trigger - players[i].bomba.set) / CLOCKS_PER_SEC == 2)
+                { // Após 2 segundos, explode a bomba
+                    players[i].bomba.explodirBomba(mapa);
                 }
             }
         }
     }
-    // FIM DO INIMIGO
-    }
 
-    void KeyboardHitActions(map currentframe){
+    void KeyboardHitActions(map currentframe)
+    {
         char tecla = getch();
-        switch (tecla)
+        for (int i = 0; i < QtdPlayers; i++)
         {
-        case 72:
-        case 'w': /// cima
-            players[0].objeto.move(0, -1, currentframe);
-            break;
-        case 80:
-        case 's': /// baixo
-            players[0].objeto.move(0, 1, currentframe);
-            break;
-        case 75:
-        case 'a': /// esquerda
-            players[0].objeto.move(-1, 0, currentframe);
-            break;
-        case 77:
-        case 'd': /// direita
-            players[0].objeto.move(1, 0, currentframe);
-            break;
-        case ' ': // Barra de espaço
-            if (!players[0].bomba.status)
-                players[0].colocabomba(); // Coloca a bomba se ela não existe
-            break;
+            players[i].keyPress(tecla, currentframe);
         }
     }
 
-    void AddItensToMap(map &currentframe){
-            currentframe.SumItens(players[0].objeto.toCore()); // adiciona o player na tela
-    for (int i = 0; i < QtdInimigos; i++)
+    void AddItensToMap(map &currentframe)
     {
-        if (inimigos[i].status)
-            currentframe.SumItens(inimigos[i].objeto.toCore()); // Adiciona o inimigo se ele está vivo
-    }
-    if (players[0].bomba.status)
-        currentframe.SumItens(players[0].bomba.objeto.toCore()); // Adiciona a bomba se ela existe
-    if (players[0].bomba.status == 2)
-        SumExplosion(players[0].bomba, currentframe); // adiciona o raio da explosão se ela explodiu
-    }
-
-    void SumExplosion(bomba bomba, map &currentframe)
-    {
-        // Essa função adiciona todos as instancias de uma explosão,
-        // as explosões são colocadas dentro de uma matriz dentro da struct bomba
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < QtdPlayers; i++)
         {
-            for (int j = 0; j < bomba.raio; j++)
-            {
-                currentframe.mapa[bomba.explosao[i][j].y][bomba.explosao[i][j].x] = bomba.explosao[i][j].id;
-            }
+            currentframe.SumItens(players[i].objeto.toCore()); // adiciona o player na tela
+        }
+        for (int i = 0; i < QtdInimigos; i++)
+        {
+            if (inimigos[i].status)
+                currentframe.SumItens(inimigos[i].objeto.toCore()); // Adiciona o inimigo se ele está vivo
+        }
+        for (int i = 0; i < QtdPlayers; i++)
+        {
+            if (players[i].bomba.status)
+                currentframe.SumItens(players[i].bomba.objeto.toCore()); // Adiciona a bomba se ela existe
+            if (players[i].bomba.status == 2)
+                SumMapExplosion(players[i].bomba, currentframe); // adiciona o raio da explosão se ela explodiu
         }
     }
 
-    void resizeMap(int newX, int newY){
+    void resizeMap(int newX, int newY)
+    {
         mapa.resize(newX, newY);
         preencherObjetos();
-        for(int i = 0; i < QtdInimigos + QtdPlayers; i ++){
-            if (objetos[i]->x >= newX){
+        for (int i = 0; i < QtdInimigos + QtdPlayers; i++)
+        { // Joga os objetos que foram jogados para fora do mapa de volta para a borda
+            if (objetos[i]->x >= newX)
+            {
                 objetos[i]->x = newX - 1;
             }
-            if(objetos[i]->y >= newY){
+            if (objetos[i]->y >= newY)
+            {
                 objetos[i]->y = newY - 1;
             }
         }
+    }
+
+    void resizePlayers(int newQtd)
+    {
+        player *oldplayers = players;
+        players = new player[newQtd];
+        int oldQtd = QtdPlayers;
+        QtdPlayers = newQtd;
+        for (int i = 0; i < newQtd; i++)
+        {
+            if (i < oldQtd)
+            {
+                players[i] = oldplayers[i];
+            }
+        }
+        for (int i = newQtd; i < oldQtd; i++)
+        {
+            oldplayers[i].deletePlayer();
+        }
+        delete[] oldplayers;
+        preencherObjetos();
+    }
+
+    void resizeInimigos(int newQtd)
+    {
+        inimigo *oldInimigos = inimigos;
+        inimigos = new inimigo[newQtd];
+        int oldQtd = QtdInimigos;
+        QtdInimigos = newQtd;
+        for (int i = 0; i < newQtd; i++)
+        {
+            if (i < oldQtd)
+            {
+                inimigos[i] = oldInimigos[i];
+            }
+        }
+        delete[] oldInimigos;
+        preencherObjetos();
     }
 };

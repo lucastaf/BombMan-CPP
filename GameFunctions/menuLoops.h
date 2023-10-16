@@ -3,18 +3,18 @@
 #define InMenu 0
 #define InGame 1
 #define InMapEditor 2
-#define Defeat 3
-#define Vicotry 4
-#define tutorial 5
-#define fileScreen 6
+#define InMapEditorConfig 3
+#define Defeat 4
+#define Vicotry 5
+#define tutorial 6
+#define fileScreen 7
 //
-int Iditemselecionado = 0; // Id do item selecionado no editor de mapas
-char gameStatus = InMenu;  // gameStatus irá definir qual tela será renderizada
+char gameStatus = InMenu; // gameStatus irá definir qual tela será renderizada
 
 gameState defaultGame;
 gameState currentGame;
 map currentframe;
-obj ghost = {0,0,ghostid};
+obj ghost = {0, 0, ghostid};
 
 void GameOverLoop(char IsWinner)
 {
@@ -80,6 +80,7 @@ void mainMenuLoop()
             break;
         }
     }
+
     cout << "\033[37m";
     cout << "\nBomberMan - C++ 1.0 \n\n";
     cout << "Press Space to Play"
@@ -130,16 +131,16 @@ void fileLoop()
     case '1':
         cout << "Digite o nome do arquivo que deseja importar \n";
         cin >> arquivo;
-        //importFile(arquivo);
+        // importFile(arquivo);
         system("cls");
-        //gameRestart(player, inimigos, m, bomba1);
+        // gameRestart(player, inimigos, m, bomba1);
         gameStatus = InMenu;
         return;
         break;
     case '2':
         cout << "Digite o nome do arquivo que sera gerado \n";
         cin >> arquivo;
-        //exportFile(arquivo);
+        // exportFile(arquivo);
         system("cls");
         gameStatus = InMenu;
         return;

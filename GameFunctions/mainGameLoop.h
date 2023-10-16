@@ -14,14 +14,7 @@ void MainGameLoop()
     if (_kbhit()) currentGame.KeyboardHitActions(currentframe);
     //------------------
 
-    if (currentGame.players[0].bomba.status)
-    { // se a bomba existe
-        currentGame.players[0].bomba.trigger = clock();
-        if ((currentGame.players[0].bomba.trigger - currentGame.players[0].bomba.set) / CLOCKS_PER_SEC == 2)
-        { // Após 2 segundos, explode a bomba
-            currentGame.players[0].bomba.explodirBomba(currentGame.mapa);
-        }
-    }
+    currentGame.bombFrameAction(currentframe);
 
     currentGame.inimigosFrameAction(currentframe);
 

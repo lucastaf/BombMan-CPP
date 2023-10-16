@@ -8,6 +8,8 @@ using namespace std;
 #define vazioid 0
 #define explosaoid 1
 #define inimigoid 2
+#define ghostPowerupId 3
+#define bombExpanderId 4 
 #define playerid 3
 #define paredeid 4
 #define paredefragilid 5
@@ -24,6 +26,42 @@ struct objcore
     int id;
 };
 
+void drawPixel(int id)
+{
+    switch (id)
+    { // Desenha o id daquele objeto
+    case vazioid:
+        cout << "\033[32m" << char(219) << "\u001b[0m";
+        break; // caminho - Verde
+    case explosaoid:
+        cout << "\033[31m"
+             << "#"
+             << "\u001b[0m";
+        break; // explosao - Laranja
+    case inimigoid:
+        cout << "\033[31m" << char(219) << "\u001b[0m";
+        break; // inimigo - Vermelho
+    case playerid:
+        cout << "\033[33m" << char(219) << "\u001b[0m";
+        break; // Player - Amarelo
+    case paredeid:
+        cout << "\u001b[41m\033[97m" << char(178) << "\u001b[0m";
+        break; // parede - cinza
+    case paredefragilid:
+        cout << "\033[37m" << char(219) << "\u001b[0m";
+        break; // parede fragil - branca
+    case bombaid:
+        cout << "\033[30m" << char(219) << "\u001b[0m";
+        break; // bomba - Preta
+    case ghostid:
+        cout << "\033[36m" << char(219) << "\u001b[0m";
+        break; // fantasma - ciano
+
+    default:
+        cout << "-"; // erro
+    }                // fim switch
+}
+
 bool isEven(int i)
 {
     return !(i % 2); // Função simples para saber se um número é par
@@ -38,7 +76,7 @@ struct map
 
     map()
     {
-        resize(10,10);
+        resize(10, 10);
         gerarMapa();
     };
 
@@ -48,30 +86,41 @@ struct map
         int oldX = sizeX, oldY = sizeY;
         sizeX = newX;
         sizeY = newY;
-        //Declara nova matriz
-        mapa = new int*[sizeY];
-        for (int i = 0; i < sizeY; i ++ ){
+        // Declara nova matriz
+        mapa = new int *[sizeY];
+        for (int i = 0; i < sizeY; i++)
+        {
             mapa[i] = new int[sizeX];
         }
-        //repassa os valores
-        for (int i = 0; i < sizeY; i++){
-            if(i < oldY){
-                for(int j = 0; j < sizeX; j++){
-                    if(j < oldX){
+        // repassa os valores
+        for (int i = 0; i < sizeY; i++)
+        {
+            if (i < oldY)
+            {
+                for (int j = 0; j < sizeX; j++)
+                {
+                    if (j < oldX)
+                    {
                         mapa[i][j] = oldmap[i][j];
-                    }else{
+                    }
+                    else
+                    {
                         mapa[i][j] = vazioid;
                     }
                 }
-            }else{
-                for(int j = 0; j < sizeX; j++){
+            }
+            else
+            {
+                for (int j = 0; j < sizeX; j++)
+                {
                     mapa[i][j] = vazioid;
                 }
             }
         }
-        //Apaga o mapa antigo
-        for(int i = 0; i < oldY; i++){
-            delete []oldmap[i];
+        // Apaga o mapa antigo
+        for (int i = 0; i < oldY; i++)
+        {
+            delete[] oldmap[i];
         }
         delete[] oldmap;
     };
@@ -103,37 +152,7 @@ struct map
         { // Para cada linha
             for (int j = 0; j < sizeX; j++)
             { // Para cada coluna da linha
-                switch (mapa[i][j])
-                { // Desenha o id daquele objeto
-                case vazioid:
-                    cout << "\033[32m" << char(219);
-                    break; // caminho - Verde
-                case explosaoid:
-                    cout << "\033[31m"
-                         << "#";
-                    break; // explosao - Laranja
-                case inimigoid:
-                    cout << "\033[31m" << char(219);
-                    break; // inimigo - Vermelho
-                case playerid:
-                    cout << "\033[33m" << char(219);
-                    break; // Player - Amarelo
-                case paredeid:
-                    cout << "\033[97m" << char(219);
-                    break; // parede - cinza
-                case paredefragilid:
-                    cout << "\033[37m" << char(219);
-                    break; // parede fragil - branca
-                case bombaid:
-                    cout << "\033[30m" << char(219);
-                    break; // bomba - Preta
-                case ghostid:
-                    cout << "\033[36m" << char(219);
-                    break; // fantasma - ciano
-
-                default:
-                    cout << "-"; // erro
-                }                // fim switch
+                drawPixel(mapa[i][j]);
             }
             cout << "\n";
         }
@@ -146,13 +165,15 @@ struct map
         mapa[objeto.y][objeto.x] = objeto.id;
     }
 
-    void copyMap(map originmap)
+    void copyMap(map originalmap, bool resizeNeeded = false)
     {
+        if (resizeNeeded)
+            resize(originalmap.sizeX, originalmap.sizeY);
         for (int i = 0; i < sizeY; i++)
         {
             for (int j = 0; j < sizeX; j++)
             {
-                mapa[i][j] = originmap.mapa[i][j];
+                mapa[i][j] = originalmap.mapa[i][j];
             }
         }
     }
@@ -164,6 +185,7 @@ struct obj
     int x;
     int y;
     int id;
+    string nome;
 
     objcore toCore()
     {
@@ -209,12 +231,11 @@ struct obj
     bool isInsideMap(int xMove, int yMove, map mapa)
     {
         // Inimide map testa se um objeto estara dentro do mapa após ele se mover
-        int i = true;
         if (xMove != 0)
         {
             if (!(x + xMove >= 0 && x + xMove < mapa.sizeX))
             {
-                i = false;
+                return false;
             }
         }
 
@@ -222,10 +243,10 @@ struct obj
         {
             if (!(y + yMove >= 0 && y + yMove < mapa.sizeY))
             {
-                i = false;
+                return false;
             }
         }
-        return i;
+        return true;
     };
 
     bool CanMove(int xMove, int yMove, map mapa)
@@ -276,16 +297,21 @@ void draw_hud(int itemId, int itemIndex)
 {
     // A função de desenhar o hud serve para imprimir a primeira linha do editor de mapas
     cout << "\033[37m>> ";
-    switch (itemId)
-    {
-        // Essa função desenha apenas se o item q está selecionado é um player ou um inimigo
-    case playerid:
-        cout << "\033[33m" << char(219);
-        break;
-    case inimigoid:
-        cout << "\033[31m" << char(219);
-        break;
-    }
+    drawPixel(itemId);
     cout << "\033[37m <<";
     cout << "Item Selecionado: " << itemIndex << "\n";
+}
+
+void rotateItem(int &item, int max, int ammount)
+{
+    int i = item + ammount;
+    if (item + ammount >= max)
+    {
+        i = 0;
+    }
+    if (item + ammount < 0)
+    {
+        i = max - 1;
+    }
+    item = i;
 }
