@@ -23,6 +23,10 @@ struct player
       bomba.deleteBomba();
     };
 
+    void resize(player newplayer){
+      bomba.resizeRaio(newplayer.bomba.raio);
+    };
+
     void keyPress (char key, map mapa){
       if(key == controles.up) objeto.move(0,-1,mapa, ghostPowerup);
       if(key == controles.down) objeto.move(0,1,mapa, ghostPowerup);

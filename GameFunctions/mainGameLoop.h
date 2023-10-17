@@ -16,13 +16,9 @@ void MainGameLoop()
 
     currentGame.bombFrameAction(currentframe);
 
-    currentGame.inimigosFrameAction(currentframe);
+    currentGame.playerFrameAction(currentframe);
 
-    if (currentGame.players[0].objeto.Colide(currentframe, explosaoid,inimigoid))
-    {
-        currentGame.contPlayers--;
-        // se o player colide com uma explosão ou com um inimigo, diminui um player
-    }
+    currentGame.inimigosFrameAction(currentframe);
     
     if (!currentGame.contPlayers){
         //se não há mais players, é game over

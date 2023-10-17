@@ -37,6 +37,9 @@ struct gameState
         {
             resizePlayers(gameOriginal.QtdPlayers);
             resizeInimigos(gameOriginal.QtdInimigos);
+            for(int i = 0; i < QtdPlayers; i++){
+                players[i].resize(gameOriginal.players[i]);
+            }
         }
         QtdPlayers = gameOriginal.QtdPlayers;
         QtdInimigos = gameOriginal.QtdInimigos;
@@ -99,6 +102,26 @@ struct gameState
         {
             // Do ID após a quantidade de players ate o ulitmo ID(Players+inimigos);
             objetos[i] = &inimigos[i - QtdPlayers].objeto;
+        }
+    }
+
+    void playerFrameAction(map currentframe)
+    {
+        for (int i = 0; i < QtdPlayers; i++)
+        {
+            if (players[i].objeto.Colide(currentframe, explosaoid))
+            {
+                players[i].status = 0;
+                contPlayers--;
+            }
+            if(players[i].objeto.Colide(mapa,ghostPowerupId)){
+                mapa.mapa[players[i].objeto.y][players[i].objeto.x] = vazioid;
+                players[i].ghostPowerup = true;
+            }
+            if(players[i].objeto.Colide(mapa,bombExpanderId)){
+                mapa.mapa[players[i].objeto.y][players[i].objeto.x] = vazioid;
+                players[i].expandbomb();
+            }
         }
     }
 
@@ -167,7 +190,8 @@ struct gameState
     {
         for (int i = 0; i < QtdPlayers; i++)
         {
-            currentframe.SumItens(players[i].objeto.toCore()); // adiciona o player na tela
+            if (players[i].status)
+                currentframe.SumItens(players[i].objeto.toCore()); // adiciona o player na tela
         }
         for (int i = 0; i < QtdInimigos; i++)
         {

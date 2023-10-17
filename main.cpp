@@ -58,7 +58,8 @@ int main()
             mapEditorLoop();
             break;
         case InMapEditorConfig:
-             break;
+            mapEditorConfigLoop();
+            break;
         case tutorial:
             tutorialLoop();
             break;

@@ -5,16 +5,19 @@
 using namespace std;
 
 // Ids de objetos
+#define QtdIdsFixos 5 // vazio, powerup, powerup, parede, fragil
 #define vazioid 0
 #define explosaoid 1
 #define inimigoid 2
 #define ghostPowerupId 3
-#define bombExpanderId 4 
-#define playerid 3
-#define paredeid 4
-#define paredefragilid 5
-#define bombaid 6
-#define ghostid 7
+#define bombExpanderId 4
+#define playerid 5
+#define paredeid 6
+#define paredefragilid 7
+#define bombaid 8
+#define ghostid 9
+
+int idsCenario[QtdIdsFixos] = {vazioid, paredeid, paredefragilid, ghostPowerupId, bombExpanderId};
 
 // Cada objeto do cenario possui um ID proprio, esses IDs são categorizados e a programação do jogo gira em torno deles//
 // Player e inimigo não possuem colisão, eles podem ser atravessado, isso garante q seja detectado quando o player ou inimigo colidem um com o outro
@@ -45,7 +48,7 @@ void drawPixel(int id)
         cout << "\033[33m" << char(219) << "\u001b[0m";
         break; // Player - Amarelo
     case paredeid:
-        cout << "\u001b[41m\033[97m" << char(178) << "\u001b[0m";
+        cout << "\033[97m" << char(219) << "\u001b[0m";
         break; // parede - cinza
     case paredefragilid:
         cout << "\033[37m" << char(219) << "\u001b[0m";
@@ -56,10 +59,18 @@ void drawPixel(int id)
     case ghostid:
         cout << "\033[36m" << char(219) << "\u001b[0m";
         break; // fantasma - ciano
-
+    case ghostPowerupId:
+        cout << "\u001b[46m\u001b[97m" << char(247) << "\u001b[0m";
+        break; // Power up fantasma
+    case bombExpanderId:
+        cout << "\u001b[45m\u001b[97m"
+             << "+"
+             << "\u001b[0m";
+        break; // Aumentar bomba
     default:
-        cout << "-"; // erro
-    }                // fim switch
+        cout
+            << "-"; // erro
+    }               // fim switch
 }
 
 bool isEven(int i)
@@ -179,13 +190,13 @@ struct map
     }
 };
 
+
 struct obj
 {
     // Struct de um objeto: possui um vetor x,y e um ID
     int x;
     int y;
     int id;
-    string nome;
 
     objcore toCore()
     {

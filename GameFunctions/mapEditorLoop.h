@@ -66,6 +66,7 @@ void editPlayerloop(int indexPlayer, int &tela)
 void mapEditorLoop()
 {
     static int Iditemselecionado = 0; // Id do item selecionado no editor de mapas
+    static int IndexCenarioSelecionado = 0;
     currentGame.preencherObjetos();
     currentframe.copyMap(currentGame.mapa);
     /// executa os movimentos
@@ -96,24 +97,24 @@ void mapEditorLoop()
             break; /// direita
 
         // A array objetos possui QtdInimigos+1 itens, logo QtdInimigos é o último ID da array
-        case 'q': // seleciona o proximo item
+        case '1': // seleciona o proximo item
             rotateItem(Iditemselecionado, currentGame.QtdInimigos + currentGame.QtdPlayers, -1);
             break;
-        case 'e': // seleciona o item anterior
+        case '3': // seleciona o item anterior
             rotateItem(Iditemselecionado, currentGame.QtdInimigos + currentGame.QtdPlayers, 1);
             break;
-        case ' ': // Bara de espaço, coloca o item selecionado
+        case 'z': // Bara de espaço, coloca o item selecionado
             currentGame.objetos[Iditemselecionado]->x = ghost.x;
             currentGame.objetos[Iditemselecionado]->y = ghost.y;
             break;
-        case 'z':
-            currentGame.mapa.mapa[ghost.y][ghost.x] = vazioid;
+        case 'q':
+            rotateItem(IndexCenarioSelecionado,QtdIdsFixos,-1);
             break;
-        case 'x':
-            currentGame.mapa.mapa[ghost.y][ghost.x] = paredeid;
+        case 'e':
+            rotateItem(IndexCenarioSelecionado,QtdIdsFixos,1);
             break;
-        case 'c':
-            currentGame.mapa.mapa[ghost.y][ghost.x] = paredefragilid;
+        case ' ':
+            currentGame.mapa.mapa[ghost.y][ghost.x] = idsCenario[IndexCenarioSelecionado];
             break;
         case 27: // ESC
             currentGame.Restart(defaultGame, true);
@@ -138,6 +139,7 @@ void mapEditorLoop()
     //------------------
     currentGame.AddItensToMap(currentframe);
     draw_hud(currentGame.objetos[Iditemselecionado]->id, Iditemselecionado);
+    draw_hud(idsCenario[IndexCenarioSelecionado],IndexCenarioSelecionado);
     currentframe.SumItens(ghost.toCore());
     currentframe.draw_map();
 }

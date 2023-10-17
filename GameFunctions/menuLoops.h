@@ -25,7 +25,7 @@ void GameOverLoop(char IsWinner)
         if (tecla == 'r' || tecla == 27)
         {
             system("cls");
-            currentGame.Restart(defaultGame);
+            currentGame.Restart(defaultGame,true);
             if (tecla == 'r')
                 gameStatus = InGame;
             if (tecla == 27)
