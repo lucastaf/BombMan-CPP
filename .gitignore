@@ -6,3 +6,16 @@ build/Debug/move_labirinto.o
 .gitignore
 build/Debug/outDebug.exe
 main.exe
+CppProperties.json
+.vs/ProjectSettings.json
+.vs/slnx.sqlite
+.vs/VSWorkspaceState.json
+.vs/BombMan-C++/FileContentIndex/33eabe19-e643-454b-942e-754f9bf8c140.vsidx
+.vs/BombMan-C++/FileContentIndex/d345823c-7daf-4cc2-a84d-e5f5e0984150.vsidx
+.vs/BombMan-C++/v17/.wsuo
+.vs/BombMan-C++/v17/Browse.VC.db
+.vs/BombMan-C++/v17/Browse.VC.db-wal
+.vs/BombMan-C++/v17/Browse.VC.db-shm
+.vs/BombMan-C++/v17/Browse.VC.opendb
+.vs/BombMan-C++/v17/ipch/AutoPCH/a01977dfc571aa49/MAIN.ipch
+.vs/BombMan-C++/v17/ipch/AutoPCH/fc44bedbab7301fd/MAIN.ipch
