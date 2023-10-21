@@ -19,9 +19,21 @@ struct player
     int status = 1; // 0 = morto, 1 = vivo
     bool ghostPowerup = false; 
 
+
+    void copy(player newPlayer){
+      objeto = newPlayer.objeto;
+      controles = newPlayer.controles;
+      bomba.copy (newPlayer.bomba);
+      status = newPlayer.status;
+      ghostPowerup = newPlayer.ghostPowerup;
+
+    }
     void deletePlayer(){
       bomba.deleteBomba();
     };
+    void createPlayer(){
+      bomba.createBomba();
+    }
 
     void resize(player newplayer){
       bomba.resizeRaio(newplayer.bomba.raio);
@@ -38,6 +50,7 @@ struct player
     }
 
     void expandbomb(){
-      bomba.resizeRaio(bomba.raio++);
+      bomba.raio++;
+      bomba.resizeRaio(bomba.raio);
     }
 };

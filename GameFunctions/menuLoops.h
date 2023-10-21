@@ -22,10 +22,10 @@ void GameOverLoop(char IsWinner)
     if (_kbhit())
     {
         char tecla = getch();
-        if (tecla == 'r' || tecla == 27)
+        if (tecla == 'r' || tecla == escKey)
         {
             system("cls");
-            currentGame.Restart(defaultGame,true);
+            currentGame.Restart(defaultGame,false,true);
             if (tecla == 'r')
                 gameStatus = InGame;
             if (tecla == 27)
@@ -59,8 +59,8 @@ void mainMenuLoop()
         {
         case ' ': // barra de espaço
             system("cls");
-            currentGame.Restart(defaultGame);
             gameStatus = InGame;
+            currentGame.unpause();
             return;
             break;
         case 'z':

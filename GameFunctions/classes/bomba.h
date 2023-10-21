@@ -6,13 +6,22 @@ struct bomba
     char status = 0;              // 0 nao existe, 1 existe, 2 explodiu
     clock_t set, trigger;         // Momento de armar a bomba e de explosão
     obj *explosao[4];             // Array com as particulas de explosão nas 4 direções
-    int raio = 2;                 // raio da Bomba
+    int raio = 1;                 // raio da Bomba
 
     bomba()
     {
         resizeRaio(raio, false);
     }
 
+    void copy(bomba newBomba, bool resizeNeeded = true){
+        objeto = newBomba.objeto;
+        status = newBomba.status;
+        set = newBomba.set;
+        trigger = newBomba.trigger;
+        raio = newBomba.raio;
+        if (resizeNeeded)
+            resizeRaio(raio);
+    }
     void resizeRaio(int newRaio, bool deleteOld = true)
     {
         if (deleteOld)
@@ -44,6 +53,13 @@ struct bomba
         delete[] explosao[1];
         delete[] explosao[2];
         delete[] explosao[3];
+    }
+
+    void createBomba(){
+        explosao[0] = new obj[raio];
+        explosao[1] = new obj[raio];
+        explosao[2] = new obj[raio];
+        explosao[3] = new obj[raio];
     }
 
     void explodirBomba(map &mapa)

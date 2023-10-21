@@ -1,23 +1,4 @@
-#include <iostream>
-#include <windows.h>
-#include <conio.h>
-#include <time.h>
-using namespace std;
-
-// Ids de objetos
-#define QtdIdsFixos 5 // vazio, powerup, powerup, parede, fragil
-#define vazioid 0
-#define explosaoid 1
-#define inimigoid 2
-#define ghostPowerupId 3
-#define bombExpanderId 4
-#define playerid 5
-#define paredeid 6
-#define paredefragilid 7
-#define bombaid 8
-#define ghostid 9
-
-int idsCenario[QtdIdsFixos] = {vazioid, paredeid, paredefragilid, ghostPowerupId, bombExpanderId};
+#include "defines.h"
 
 // Cada objeto do cenario possui um ID proprio, esses IDs são categorizados e a programação do jogo gira em torno deles//
 // Player e inimigo não possuem colisão, eles podem ser atravessado, isso garante q seja detectado quando o player ou inimigo colidem um com o outro

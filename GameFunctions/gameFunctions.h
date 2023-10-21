@@ -30,14 +30,16 @@ struct gameState
         // preencherObjetos();
     }
 
-    void Restart(gameState gameOriginal, bool resizeNeeded = false)
+    void Restart(gameState gameOriginal, bool resizeNeeded = false, bool resetArrays = false)
     {
+
         // Define todas as variaveis para as condições inicias
         if (resizeNeeded)
         {
             resizePlayers(gameOriginal.QtdPlayers);
             resizeInimigos(gameOriginal.QtdInimigos);
-            for(int i = 0; i < QtdPlayers; i++){
+            for (int i = 0; i < QtdPlayers; i++)
+            {
                 players[i].resize(gameOriginal.players[i]);
             }
         }
@@ -48,11 +50,20 @@ struct gameState
         contPlayers = QtdPlayers;
         for (int i = 0; i < QtdPlayers; i++)
         {
-            players[i] = gameOriginal.players[i];
+            players[i].copy(gameOriginal.players[i]);
         }
         for (int i = 0; i < QtdInimigos; i++)
         {
             inimigos[i] = gameOriginal.inimigos[i];
+        }
+
+        if (resetArrays)
+        {
+            for (int i = 0; i < QtdPlayers; i++)
+            {
+                players[i].deletePlayer();
+                players[i].createPlayer();
+            }
         }
     }
 
@@ -109,16 +120,18 @@ struct gameState
     {
         for (int i = 0; i < QtdPlayers; i++)
         {
-            if (players[i].objeto.Colide(currentframe, explosaoid))
+            if (players[i].objeto.Colide(currentframe, explosaoid) || players[i].objeto.Colide(currentframe, inimigoid))
             {
                 players[i].status = 0;
                 contPlayers--;
             }
-            if(players[i].objeto.Colide(mapa,ghostPowerupId)){
+            if (players[i].objeto.Colide(mapa, ghostPowerupId))
+            {
                 mapa.mapa[players[i].objeto.y][players[i].objeto.x] = vazioid;
                 players[i].ghostPowerup = true;
             }
-            if(players[i].objeto.Colide(mapa,bombExpanderId)){
+            if (players[i].objeto.Colide(mapa, bombExpanderId))
+            {
                 mapa.mapa[players[i].objeto.y][players[i].objeto.x] = vazioid;
                 players[i].expandbomb();
             }
@@ -177,9 +190,8 @@ struct gameState
         }
     }
 
-    void KeyboardHitActions(map currentframe)
+    void KeyboardHitActions(map currentframe, char tecla)
     {
-        char tecla = getch();
         for (int i = 0; i < QtdPlayers; i++)
         {
             players[i].keyPress(tecla, currentframe);
@@ -260,5 +272,24 @@ struct gameState
         }
         delete[] oldInimigos;
         preencherObjetos();
+    }
+
+    void pause(){
+        for(int i = 0; i < QtdPlayers; i ++){
+            players[i].bomba.trigger = clock() - players[i].bomba.set;
+        }
+        for(int i = 0; i < QtdInimigos; i++){
+            inimigos[i].trigger = clock() - inimigos[i].set;
+        }
+    }
+
+
+    void unpause(){
+        for(int i = 0; i < QtdPlayers; i ++){
+            players[i].bomba.set = clock() - players[i].bomba.trigger;
+        }
+        for(int i = 0; i < QtdInimigos; i++){
+            inimigos[i].set = clock() - inimigos[i].trigger;
+        }
     }
 };

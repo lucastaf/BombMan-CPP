@@ -11,7 +11,21 @@ void MainGameLoop()
     currentGame.AddItensToMap(currentframe);
 
     /// executa os movimentos
-    if (_kbhit()) currentGame.KeyboardHitActions(currentframe);
+    if (_kbhit()){
+        char tecla = getch();
+        currentGame.KeyboardHitActions(currentframe,tecla);
+        if(tecla == escKey){
+            system("cls");
+            gameStatus = InMenu;
+            currentGame.pause();
+            return;
+        }
+        if(tecla == 'r'){
+            system("cls");
+            currentGame.Restart(defaultGame,false,true);
+            return;
+        }
+    } 
     //------------------
 
     currentGame.bombFrameAction(currentframe);

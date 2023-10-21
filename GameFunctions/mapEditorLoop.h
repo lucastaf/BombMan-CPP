@@ -76,7 +76,7 @@ void mapEditorLoop()
         switch (tecla)
         {
         case 72:
-        case 'w':
+        case 'w': 
             if (ghost.isInsideMap(0, -1, currentframe))
                 ghost.y--;
             break; /// cima
