@@ -37,10 +37,9 @@ void readWord(ifstream &arquivo, int &out)
     string temp;
     arquivo >> temp;
     out = stoi(temp);
-    cout << temp << "\n";
 }
 
-void importFile(string name, gameState &game)
+bool importFile(string name, gameState &game)
 {
     ifstream arquivo;
     string temp;
@@ -49,16 +48,16 @@ void importFile(string name, gameState &game)
 
     if (!arquivo.is_open())
     {
-        cout << "Nao foi possivel abrir o arquivo";
+        cout << "Nao foi possivel abrir o arquivo\n";
         cin >> name; // descartar variavel name
-        return;
+        return false;
     }
     arquivo >> temp;
     if (temp != "bombermansavedata")
     {
-        cout << "arquivo invalido";
+        cout << "arquivo invalido\n";
         cin >> name;
-        return;
+        return false;
     }
     int newMapX, newMapY;
     int newPlayersQtd, newInimigosQtd;
@@ -78,10 +77,11 @@ void importFile(string name, gameState &game)
         readWord(arquivo, tempPlayer->objeto.y);
         readWord(arquivo, tempPlayer->bomba.objeto.x);
         readWord(arquivo, tempPlayer->bomba.objeto.y);
-        readWord(arquivo, tempPlayer->bomba.trigger);
+        readWord(arquivo, tempPlayer->bomba.set);
         readWord(arquivo, tempPlayer->bomba.status);
         readWord(arquivo, tempPlayer->bomba.raio);
         tempPlayer->bomba.resizeRaio(tempPlayer->bomba.raio);
+        readWord(arquivo, tempPlayer->bomba.atravessaParede);
         readWord(arquivo, tempPlayer->status);
         readWord(arquivo, tempPlayer->ghostPowerup);
         readWord(arquivo, tempPlayer->controles.up);
@@ -104,9 +104,12 @@ void importFile(string name, gameState &game)
     }
     game.preencherObjetos();
     arquivo.close();
+    
 
-    cout << "Mapa carregado com sucesso";
+
+    cout << "Mapa carregado com sucesso\n";
     cin >> name;
+    return true;
 }
 
 void exportFile(string name, gameState game)
@@ -123,8 +126,8 @@ void exportFile(string name, gameState game)
         player tempPlayer = game.players[i];
         tempPlayer.controles.deletarEspacos();
         arquivo << tempPlayer.objeto.x << " " << tempPlayer.objeto.y << " ";
-        arquivo << tempPlayer.bomba.objeto.x << " " << tempPlayer.bomba.objeto.y << " " << tempPlayer.bomba.trigger << " " << tempPlayer.bomba.status << " " << tempPlayer.bomba.raio << " ";
-        arquivo << tempPlayer.status << " " << tempPlayer.ghostPowerup << " ";
+        arquivo << tempPlayer.bomba.objeto.x << " " << tempPlayer.bomba.objeto.y << " " << tempPlayer.bomba.set << " " << tempPlayer.bomba.status << " " << tempPlayer.bomba.raio << " ";
+        arquivo << tempPlayer.bomba.atravessaParede << " " << tempPlayer.status << " " << tempPlayer.ghostPowerup << " ";
         arquivo << tempPlayer.controles.up << " " << tempPlayer.controles.down << " " << tempPlayer.controles.left << " " << tempPlayer.controles.right << " " << tempPlayer.controles.bomb << " ";
         arquivo << "\n";
     }

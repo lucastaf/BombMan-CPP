@@ -16,16 +16,17 @@ using namespace std;
 
 
 // Ids de objetos
-#define QtdIdsFixos 5 // vazio, powerup, powerup, parede, fragil
+#define QtdIdsFixos 6 // vazio, powerup, powerup, powerup, parede, fragil
 #define vazioid 0
 #define explosaoid 1
 #define inimigoid 2
 #define ghostPowerupId 3
 #define bombExpanderId 4
-#define playerid 5
-#define paredeid 6
-#define paredefragilid 7
-#define bombaid 8
-#define ghostid 9
+#define ghostBombId 5
+#define playerid 6
+#define paredeid 7
+#define paredefragilid 8
+#define bombaid 9
+#define ghostid 10
 
-int idsCenario[QtdIdsFixos] = {vazioid, paredeid, paredefragilid, ghostPowerupId, bombExpanderId};
+int idsCenario[QtdIdsFixos] = {vazioid, paredeid, paredefragilid, ghostPowerupId, bombExpanderId, ghostBombId};

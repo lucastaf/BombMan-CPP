@@ -97,13 +97,13 @@ void mapEditorLoop()
             break; /// direita
 
         // A array objetos possui QtdInimigos+1 itens, logo QtdInimigos é o último ID da array
-        case '1': // seleciona o proximo item
+        case 'z': // seleciona o proximo item
             rotateItem(Iditemselecionado, currentGame.QtdInimigos + currentGame.QtdPlayers, -1);
             break;
-        case '3': // seleciona o item anterior
+        case 'c': // seleciona o item anterior
             rotateItem(Iditemselecionado, currentGame.QtdInimigos + currentGame.QtdPlayers, 1);
             break;
-        case 'z': // Bara de espaço, coloca o item selecionado
+        case 'x': // Bara de espaço, coloca o item selecionado
             currentGame.objetos[Iditemselecionado]->x = ghost.x;
             currentGame.objetos[Iditemselecionado]->y = ghost.y;
             break;
@@ -116,13 +116,13 @@ void mapEditorLoop()
         case ' ':
             currentGame.mapa.mapa[ghost.y][ghost.x] = idsCenario[IndexCenarioSelecionado];
             break;
-        case 27: // ESC
+        case escKey: // ESC
             currentGame.Restart(defaultGame, true);
             system("cls");
             gameStatus = InMenu;
             return;
             break;
-        case 13: // Enter
+        case enterKey: // Enter
             // Define as variaveis padrao para as variaveis editadas
             defaultGame.Restart(currentGame, true);
             system("cls");
@@ -161,7 +161,6 @@ void mapEditorConfigLoop()
         cout << "2. Quantidade de players \n";
         cout << "3. Quantidade de inimigos \n";
         cout << "w. Editar Player P" << selecPlayer << "\n";
-        cout << "s. Editar Inimigo N" << selecInimigo << "\n";
         cout << "Esc. Voltar ao editor \n";
         if (_kbhit())
         {
@@ -189,16 +188,6 @@ void mapEditorConfigLoop()
             case 'w':
                 tela = 4;
                 system("cls");
-                break;
-            case 'a':
-                rotateItem(selecInimigo, currentGame.QtdInimigos, -1);
-                break;
-            case 's':
-                tela = 5;
-                system("cls");
-                break;
-            case 'd':
-                rotateItem(selecInimigo, currentGame.QtdInimigos, 1);
                 break;
 
             case 27:
@@ -238,6 +227,7 @@ void mapEditorConfigLoop()
         if (confirm == 'y' || confirm == 'Y')
         {
             currentGame.resizePlayers(qtd);
+            currentGame.contPlayers = qtd;
             currentGame.preencherObjetos();
         }
         tela = 0;
@@ -253,6 +243,7 @@ void mapEditorConfigLoop()
         if (confirm == 'y' || confirm == 'Y')
         {
             currentGame.resizeInimigos(qtd);
+            currentGame.contInimigos = qtd;
             currentGame.preencherObjetos();
         }
         tela = 0;
@@ -260,8 +251,6 @@ void mapEditorConfigLoop()
         break;
     case 4:
         editPlayerloop(selecPlayer, tela);
-        break;
-    case 5:
         break;
     }
 }

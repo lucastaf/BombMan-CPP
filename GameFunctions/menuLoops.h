@@ -25,7 +25,7 @@ void GameOverLoop(char IsWinner)
         if (tecla == 'r' || tecla == escKey)
         {
             system("cls");
-            currentGame.Restart(defaultGame,false,true);
+            currentGame.Restart(defaultGame, false, true);
             if (tecla == 'r')
                 gameStatus = InGame;
             if (tecla == 27)
@@ -63,17 +63,23 @@ void mainMenuLoop()
             currentGame.unpause();
             return;
             break;
-        case 'z':
+        case 'z': // barra de espaço
             system("cls");
-            gameStatus = InMapEditor;
+            gameStatus = InGame;
+            currentGame.Restart(defaultGame,false,true);
             return;
             break;
         case 'x':
             system("cls");
-            gameStatus = tutorial;
+            gameStatus = InMapEditor;
             return;
             break;
         case 'c':
+            system("cls");
+            gameStatus = tutorial;
+            return;
+            break;
+        case 'v':
             system("cls");
             gameStatus = fileScreen;
             return;
@@ -83,12 +89,13 @@ void mainMenuLoop()
 
     cout << "\033[37m";
     cout << "\nBomberMan - C++ 1.0 \n\n";
-    cout << "Press Space to Play"
-         << "\n\n";
+    cout << "Press Space to Continue \n";
+    cout << "Press Z to New Game";
+    cout << "\n\n";
 
-    cout << "Press 'z' to Map Editor\n";
-    cout << "Press 'x' to tutorial\n";
-    cout << "Press 'c' to import a file";
+    cout << "Press 'x' to Map Editor\n";
+    cout << "Press 'c' to tutorial\n";
+    cout << "Press 'v' to import a file";
 }
 
 void tutorialLoop()
@@ -104,17 +111,18 @@ void tutorialLoop()
         }
     }
     cout << "\033[37m";
+    cout << "Trabalho feito por Lucas Bittencourt Rauch e Milca Leite Pereira Barreto \n";
     cout << "\nO jogo de bomberman consiste em varios inimigos(em vermelho) e um player(em amarelo), \n";
     cout << "Para vencer o jogo, o jogador deve derrotar todos os inimigos,\n";
     cout << "Se o jogador encostar em um inimigo ou em sua bomba, ele perde\n";
-    cout << "\nMova o player com wasd ou com as setinhas, coloque uma bomba utilizando barra de espaco\n";
+    cout << "\nMova o player com as setinhas, coloque uma bomba utilizando barra de espaco\n";
     cout << "\n\nEditor de Mapas:\n\n";
     cout << "pressione Q e E para alternar entre os itens selecionados,\n";
-    cout << "pressione Barra de Espaco para colocar um item\n";
-    cout << "Os cenarios sao construidos com Z,X e C ->\n";
-    cout << "Z = Caminho vazio\n";
-    cout << "X = Parede solida\n";
-    cout << "C = Parede fragil\n";
+    cout << "pressione Barra de Espaco para colocar o item no cenario\n";
+    cout << "Os objetos nao estaticos sao selecionados utilizando Z e C\n";
+    cout << "Coloque um objeto utilizando a tecla X\n";
+    cout << "Pressionando a tecla T voce pode abrir o menu de configuracoes \n";
+    cout << "O menu de configuracoes te permite alterar os tamanhos e as propriedades dos objetos\n";
     cout << "\nPressione ESC para retornar ao menu";
 }
 
@@ -131,10 +139,17 @@ void fileLoop()
     case '1':
         cout << "Digite o nome do arquivo que deseja importar \n";
         cin >> arquivo;
-        importFile(arquivo, defaultGame);
+        if(importFile(arquivo, defaultGame)){
+            currentGame.Restart(defaultGame, true, true);
+            currentframe.resize(currentGame.mapa.sizeX, currentGame.mapa.sizeY);
+            for(int i = 0; i < currentGame.QtdPlayers; i++){
+            if(currentGame.players[i].bomba.status == 2){
+                currentGame.players[i].bomba.explodirBomba(currentGame.mapa,true);
+                defaultGame.players[i].bomba.status = 0;
+            }
+        }
         system("cls");
-        currentGame.Restart(defaultGame,true,true);
-        currentframe.resize(currentGame.mapa.sizeX,currentGame.mapa.sizeY);
+    }
         gameStatus = InMenu;
         return;
         break;

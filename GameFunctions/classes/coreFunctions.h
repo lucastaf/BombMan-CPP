@@ -48,6 +48,11 @@ void drawPixel(int id)
              << "+"
              << "\u001b[0m";
         break; // Aumentar bomba
+    case ghostBombId:
+        cout << "\u001b[45m\u001b[97m"
+             << char(247)
+             << "\u001b[0m";
+        break;
     default:
         cout
             << "-"; // erro
@@ -170,7 +175,6 @@ struct map
         }
     }
 };
-
 
 struct obj
 {

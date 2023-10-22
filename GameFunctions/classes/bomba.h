@@ -3,17 +3,19 @@
 struct bomba
 {
     obj objeto = {0, 0, bombaid}; // Objeto bomba (centro)
-    int status = 0;              // 0 nao existe, 1 existe, 2 explodiu
+    int status = 0;               // 0 nao existe, 1 existe, 2 explodiu
     clock_t set, trigger;         // Momento de armar a bomba e de explosão
     obj *explosao[4];             // Array com as particulas de explosão nas 4 direções
     int raio = 1;                 // raio da Bomba
+    bool atravessaParede = false;
 
     bomba()
     {
         resizeRaio(raio, false);
     }
 
-    void copy(bomba newBomba, bool resizeNeeded = true){
+    void copy(bomba newBomba, bool resizeNeeded = true)
+    {
         objeto = newBomba.objeto;
         status = newBomba.status;
         set = newBomba.set;
@@ -55,17 +57,18 @@ struct bomba
         delete[] explosao[3];
     }
 
-    void createBomba(){
+    void createBomba()
+    {
         explosao[0] = new obj[raio];
         explosao[1] = new obj[raio];
         explosao[2] = new obj[raio];
         explosao[3] = new obj[raio];
     }
 
-    void explodirBomba(map &mapa)
+    void explodirBomba(map &mapa, bool apenasExplodir = false)
     {
-        if (status == 2)
-        {                        // se a bomba ja havia explodido
+        if (status == 2 && !apenasExplodir)
+        {                        // se a bomba ja havia explodido e não é apenas para explodi-la
             status = 0;          // ela deixar de exisitr
             objeto.id = bombaid; // seu id vira o de uma bomba
             return;              // finaliza a função
@@ -112,7 +115,8 @@ struct bomba
                 if (mapa.mapa[explosao[i][j].y][explosao[i][j].x] == paredefragilid)
                 {                                                            // se a explosão atingiu uma parede fragil
                     mapa.mapa[explosao[i][j].y][explosao[i][j].x] = vazioid; // aquele local do mapa passa a ser um vazio
-                    canExpand = false;                                       // a bomba não pode mais expandir a partir dali
+                    if (atravessaParede == false)                            // se não tiver o powerup de atravasar parede
+                        canExpand = false;                                   // a bomba não pode mais expandir a partir dali
                 }
             }
         }

@@ -135,6 +135,10 @@ struct gameState
                 mapa.mapa[players[i].objeto.y][players[i].objeto.x] = vazioid;
                 players[i].expandbomb();
             }
+            if(players[i].objeto.Colide(mapa,ghostBombId)){
+                mapa.mapa[players[i].objeto.y][players[i].objeto.x] = vazioid;
+                players[i].bomba.atravessaParede = true;
+            }
         }
     }
 
@@ -276,20 +280,20 @@ struct gameState
 
     void pause(){
         for(int i = 0; i < QtdPlayers; i ++){
-            players[i].bomba.trigger = clock() - players[i].bomba.set;
+            players[i].bomba.set = players[i].bomba.trigger - players[i].bomba.set;
         }
         for(int i = 0; i < QtdInimigos; i++){
-            inimigos[i].trigger = clock() - inimigos[i].set;
+            inimigos[i].set = players[i].bomba.trigger - inimigos[i].set;
         }
     }
 
 
     void unpause(){
         for(int i = 0; i < QtdPlayers; i ++){
-            players[i].bomba.set = clock() - players[i].bomba.trigger;
+            players[i].bomba.set = clock() - players[i].bomba.set;
         }
         for(int i = 0; i < QtdInimigos; i++){
-            inimigos[i].set = clock() - inimigos[i].trigger;
+            inimigos[i].set = clock();
         }
     }
 };
