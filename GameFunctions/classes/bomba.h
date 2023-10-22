@@ -3,7 +3,7 @@
 struct bomba
 {
     obj objeto = {0, 0, bombaid}; // Objeto bomba (centro)
-    char status = 0;              // 0 nao existe, 1 existe, 2 explodiu
+    int status = 0;              // 0 nao existe, 1 existe, 2 explodiu
     clock_t set, trigger;         // Momento de armar a bomba e de explosão
     obj *explosao[4];             // Array com as particulas de explosão nas 4 direções
     int raio = 1;                 // raio da Bomba

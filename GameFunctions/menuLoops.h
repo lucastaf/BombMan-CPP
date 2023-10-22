@@ -131,16 +131,17 @@ void fileLoop()
     case '1':
         cout << "Digite o nome do arquivo que deseja importar \n";
         cin >> arquivo;
-        // importFile(arquivo);
+        importFile(arquivo, defaultGame);
         system("cls");
-        // gameRestart(player, inimigos, m, bomba1);
+        currentGame.Restart(defaultGame,true,true);
+        currentframe.resize(currentGame.mapa.sizeX,currentGame.mapa.sizeY);
         gameStatus = InMenu;
         return;
         break;
     case '2':
         cout << "Digite o nome do arquivo que sera gerado \n";
         cin >> arquivo;
-        // exportFile(arquivo);
+        exportFile(arquivo, currentGame);
         system("cls");
         gameStatus = InMenu;
         return;

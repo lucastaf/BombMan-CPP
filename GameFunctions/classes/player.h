@@ -7,17 +7,33 @@ struct Controls
   char down = 80; //baixo
   char right = 77; //direita
   char bomb = ' '; //espaco
-};
+
+  void deletarEspacos(){
+    if(up == spaceKey) up = 255;
+    if(left == spaceKey) left = 255;
+    if(down == spaceKey) down = 255;
+    if(right == spaceKey) right = 255;
+    if(bomb == spaceKey) bomb = 255;
+  }
+  void lerEspacos(){
+    if(up == -1) up = spaceKey;
+    if(left == -1) left = spaceKey;
+    if(down == -1) down = spaceKey;
+    if(right == -1) right = spaceKey;
+    if(bomb == -1) bomb = spaceKey;
+  }
+  
+  };
 
 
 
 struct player
 {
     obj objeto = {0,0,playerid};
-    Controls controles;
     bomba bomba;   
     int status = 1; // 0 = morto, 1 = vivo
     bool ghostPowerup = false; 
+    Controls controles;
 
 
     void copy(player newPlayer){
