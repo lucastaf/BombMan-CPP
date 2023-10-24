@@ -3,7 +3,7 @@
 struct inimigo
 {
     obj objeto = {0, 0, inimigoid}; // Objeto do inimigo
-    clock_t set = clock(), trigger; // Inicio da mudança de estado / final
+    clock_t set, trigger; // Inicio da mudança de estado / final
     clock_t tempoDePasso;
     int status = 1;                // 0 = morto, 1 = parado, 2 = andando
     int numeroPassos;               // Passos a serem andados

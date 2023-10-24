@@ -166,7 +166,7 @@ struct gameState
                 {
                     if (inimigos[i].numeroPassos) // se ainda há passos a serem andados
                     {
-                        if ((inimigos[i].trigger - inimigos[i].set) / CLOCKS_PER_SEC == inimigos[i].tempoDePasso)
+                        if ((inimigos[i].trigger - inimigos[i].set) / CLOCKS_PER_SEC >= inimigos[i].tempoDePasso)
                             inimigos[i].move(currentframe);
                     }
                     else
@@ -186,7 +186,7 @@ struct gameState
             if (players[i].bomba.status)
             { // se a bomba existe
                 players[i].bomba.trigger = clock();
-                if ((players[i].bomba.trigger - players[i].bomba.set) / CLOCKS_PER_SEC == 2)
+                if ((players[i].bomba.trigger - players[i].bomba.set) / CLOCKS_PER_SEC >= 2)
                 { // Após 2 segundos, explode a bomba
                     players[i].bomba.explodirBomba(mapa);
                 }
@@ -280,10 +280,10 @@ struct gameState
 
     void pause(){
         for(int i = 0; i < QtdPlayers; i ++){
-            players[i].bomba.set = players[i].bomba.trigger - players[i].bomba.set;
+            players[i].bomba.set = clock() - players[i].bomba.set;
         }
         for(int i = 0; i < QtdInimigos; i++){
-            inimigos[i].set = players[i].bomba.trigger - inimigos[i].set;
+            inimigos[i].set = clock() - inimigos[i].set;
         }
     }
 
@@ -291,9 +291,11 @@ struct gameState
     void unpause(){
         for(int i = 0; i < QtdPlayers; i ++){
             players[i].bomba.set = clock() - players[i].bomba.set;
+            players[i].bomba.trigger = clock();
         }
         for(int i = 0; i < QtdInimigos; i++){
-            inimigos[i].set = clock();
+            inimigos[i].set = clock() - inimigos[i].set;
+            inimigos[i].trigger = clock();
         }
     }
 };
