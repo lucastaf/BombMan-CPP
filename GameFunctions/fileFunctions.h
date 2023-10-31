@@ -114,7 +114,6 @@ bool importFile(string name, gameState &game)
 
 void exportFile(string name, gameState game)
 {
-    game.pause();
     remove(name.c_str());
     ofstream arquivo;
     arquivo.open(name);
