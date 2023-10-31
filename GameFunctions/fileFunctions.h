@@ -95,6 +95,8 @@ bool importFile(string name, gameState &game)
         readWord(arquivo, game.inimigos[i].objeto.x);
         readWord(arquivo, game.inimigos[i].objeto.y);
         readWord(arquivo, game.inimigos[i].status);
+        game.inimigos[i].set = 0;
+        game.inimigos[i].numeroPassos = 0;
     }
 
     for(int i = 0; i < game.mapa.sizeY; i++){
